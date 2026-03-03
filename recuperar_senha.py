@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.security import generate_password_hash
 import requests
+import os
 
 
 # nosssa logo esta no site imgur:
@@ -190,7 +191,7 @@ def enviar_codigo():
                 
                 headers = {
                     "accept": "application/json",
-                    "api-key": "xsmtpsib-5d10ec2422a7e30ed4bb0b373bd540f3aa1c759b01c86f748028975c08cf8653-cCXwH63eh38M7bCg", # <--- Substitua aqui!
+                    "api-key": os.environ.get("CHAVE_BREVO"), 
                     "content-type": "application/json"
                 }
                 
