@@ -1,0 +1,208 @@
+<style>
+    /* Container da Busca */
+    .search-header {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .search-box {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .search-box input {
+        padding: 12px;
+        width: 60%;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .search-box input:focus {
+        border-color: #007b8f;
+    }
+
+    .btn-search {
+        padding: 12px 25px;
+        background-color: #007b8f;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-search:hover {
+        background-color: #005f73;
+    }
+
+    /* Cards de Resultado */
+    .results-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .user-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        border-left: 5px solid #007b8f;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .user-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .user-header h3 {
+        color: #333;
+        margin: 0;
+    }
+
+    .user-info p {
+        margin: 5px 0;
+        color: #555;
+        font-size: 14px;
+    }
+
+    /* Lista de Atestados dentro do Card */
+    .atestados-mini-list {
+        margin-top: 15px;
+        background: #f9f9f9;
+        padding: 10px;
+        border-radius: 6px;
+    }
+
+    .atestados-mini-list h4 {
+        font-size: 14px;
+        color: #007b8f;
+        margin-bottom: 10px;
+    }
+
+    .mini-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="search-header">
+    <h2 style="color: #007b8f;">Buscar Usuário</h2>
+    <p>Pesquise por Nome, CPF ou E-mail para ver o histórico.</p>
+    
+    <div class="search-box">
+        <input type="text" id="termoBusca" placeholder="Digite nome, CPF ou e-mail...">
+        <button class="btn-search" onclick="realizarBusca()">Buscar</button>
+    </div>
+</div>
+
+<div id="loading" style="display:none; text-align:center; padding:20px;">
+    <i class="fas fa-spinner fa-spin fa-2x" style="color: #007b8f;"></i>
+    <p>Pesquisando...</p>
+</div>
+
+<div id="resultados" class="results-container"></div>
+
+<script>
+    function realizarBusca() {
+        const termo = document.getElementById('termoBusca').value;
+        const resultadosDiv = document.getElementById('resultados');
+        const loading = document.getElementById('loading');
+
+        if (!termo) {
+            Swal.fire("Atenção", "Digite algo para pesquisar.", "warning");
+            return;
+        }
+
+        // Limpa resultados anteriores e mostra loading
+        resultadosDiv.innerHTML = '';
+        loading.style.display = 'block';
+
+        // Chama a API que criamos no app.py
+        // Nota: O parâmetro no app.py é 'email', mas nossa SQL busca por Nome e CPF também.
+        fetch(`/api/buscar_usuario?email=${termo}`)
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+
+                if (data.error || !data.usuarios || data.usuarios.length === 0) {
+                    resultadosDiv.innerHTML = '<p style="text-align:center; color:#666;">Nenhum usuário encontrado.</p>';
+                    return;
+                }
+
+                // Para cada usuário encontrado, cria um Card HTML
+                data.usuarios.forEach(user => {
+                    // Monta o HTML dos atestados desse usuário
+                    let atestadosHtml = '';
+                    if (user.atestados && user.atestados.length > 0) {
+                        user.atestados.forEach(att => {
+                            atestadosHtml += `
+                                <div class="mini-item">
+                                    <span>${att.descricao}</span>
+                                    <span style="color:#666;">${att.data_envio}</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        atestadosHtml = '<p style="font-size:12px; color:#999;">Nenhum atestado enviado.</p>';
+                    }
+
+                    // Monta o Card do Usuário
+                    const card = document.createElement('div');
+                    card.className = 'user-card';
+                    card.innerHTML = `
+                        <div class="user-header">
+                            <h3>${user.nome}</h3>
+                            <span style="font-weight:bold; color: #007b8f;">${user.tipo}</span>
+                        </div>
+                        <div class="user-info">
+                            <p><strong>CPF:</strong> ${user.cpf}</p>
+                            <p><strong>E-mail:</strong> ${user.email}</p>
+                            <p><strong>Telefone:</strong> ${user.tell}</p>
+                            <p><strong>Endereço:</strong> ${user.cep}, ${user.num_ende}</p>
+                        </div>
+                        
+                        <div class="atestados-mini-list">
+                            <h4>📄 Histórico de Atestados</h4>
+                            ${atestadosHtml}
+                        </div>
+                    `;
+                    resultadosDiv.appendChild(card);
+                });
+            })
+            .catch(err => {
+                loading.style.display = 'none';
+                console.error(err);
+                Swal.fire("Erro", "Erro ao buscar dados. Verifique a conexão.", "error");
+            });
+    }
+
+    // Permite apertar ENTER para buscar
+    document.getElementById('termoBusca').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            realizarBusca();
+        }
+    });
+</script>

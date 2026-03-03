@@ -1,0 +1,14 @@
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <h3>Enviar Atestado</h3>
+
+  <label>CPF:</label>
+  <input type="text" name="cpf" maxlength="11" required>
+
+  <label>Descrição:</label>
+  <input type="text" name="descricao" maxlength="40" required>
+
+  <label>Arquivo (Imagem ou PDF):</label>
+  <input type="file" name="file" accept="image/*,.pdf" required>
+
+  <button type="submit">Enviar</button>
+</form>

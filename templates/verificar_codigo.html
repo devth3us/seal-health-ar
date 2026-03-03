@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Código - Seal Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/codigo.css') }}">
+</head>
+<body>
+    <header class="cabecalho" class="notranslate" translate="no"> Seal Health </header>
+    <main>
+        <div class="login-container">
+            <h2>Verificar Código</h2>
+            <form action="{{ url_for('recuperar.validar_codigo') }}" method="POST">
+                <div class="input-group">
+                    <input type="hidden" name="cpf" value="{{ cpf }}"> 
+                    <input type="text" name="codigo" required>
+                    <label for="codigo">Digite o código enviado por e-mail</label>
+                </div>
+                <button type="submit">Verificar</button>
+            </form>
+        </div>
+    </main>
+    <footer class="notranslate" translate="no"> &copy; 2025 Seal Health | Todos os direitos reservados. </footer>
+</body>
+</html>

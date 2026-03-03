@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tela inicial do sistema</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/escolha.css') }}"> 
+
+</head>
+<body>
+  <header class="notranslate" translate="no">Seal Health</header>
+
+  <main>
+    <div class="container">
+      <h2>Entrar como</h2>
+      <button class="user" onclick="window.location.href='/login_usuario'">Usuário</button>
+      <button class="servidor" onclick="window.location.href='/login_admin'">Servidor</button>
+    </div>
+  </main>
+
+  <footer class="notranslate" translate="no">&copy;Seal Health </footer>
+</body>
+</html>

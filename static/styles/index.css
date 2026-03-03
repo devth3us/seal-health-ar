@@ -1,0 +1,113 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('../images/fundo.jpeg'); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Caixa de login centralizada */
+.login-container {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+  width: 350px;
+  text-align: center;
+}
+
+/* Titulo */
+.login-container h2 {
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  color: #007b8f;
+}
+
+
+
+/* Contêiner Pai */
+.input-group {
+  position: relative; /* Essencial para posicionar o label de forma absoluta */
+  margin: 25px 0 35px 0; /* Espaçamento entre os campos e botão */
+  text-align: left; /* Garante que o texto dentro seja alinhado à esquerda */
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  margin: 0; /* Remove margem */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 16px;
+  background: transparent; /* Permite que o label seja visto sob o input */
+}
+
+/*Label */
+.input-group label {
+  position: absolute;
+  top: 12px; /* Posiçao vertical inicial */
+  left: 12px; /* Posiçao horizontal inicial */
+  color: #888;
+  font-size: 16px;
+  pointer-events: none; /* Permite clicar no input "atraves" do label */
+  transition: all 0.3s ease; /* A TRANSICAO SUAVE */
+  padding: 0 4px;
+}
+
+.input-group input:focus + label,
+.input-group input:valid + label { 
+  top: -10px; /* MOVE PARA CIMA */
+  left: 8px;
+  font-size: 12px; /* DIMINUI A FONTE */
+  color: #007b8f; /* MUDA A COR */
+  background-color: white; /* Cor de fundo para "cortar" a linha da borda */
+}
+
+
+.input-group input:focus {
+  border-color: #007b8f;
+  outline: none;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  background: #007b8f;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 15px; /* Adiciona margem abaixo do botão */
+}
+
+.login-container button:hover {
+  background: #005f6e;
+}
+
+.login-container p {
+  margin-top: 15px;
+}
+
+/* Link */
+.login-container a {
+  color: #007b8f;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.esqueci_senha{
+  padding: 5px;
+  margin: 0; /* Ajustado a margem */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

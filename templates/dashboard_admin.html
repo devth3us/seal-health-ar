@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title class="notranslate" translate="no">Admin - Seal Health</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard_admin.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <i class="fas fa-bars menu-toggle" id="menuToggle" aria-label="Abrir Menu"></i>
+      <h1>Painel Administrativo</h1>
+    </div>
+    <i class="fas fa-user-shield profile-icon" aria-label="Informações do Admin"></i>
+  </header>
+
+  <nav id="sidebar">
+    <div class="profile-summary">
+        <i class="fas fa-user-shield fa-2x"></i>
+        <span>Olá, {{ user.nome.split()[0] }}! (ADM)</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#" id="loadDashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#" id="loadAtestados"><i class="fas fa-file-alt"></i> Gerenciar Atestados</a></li>
+        <li><a href="#" id="loadCadastro"><i class="fas fa-user-plus"></i> Cadastro de Pessoas</a></li>
+        <li><a href="#" id="loadBusca"><i class="fas fa-users-cog"></i> Gestão de Usuários</a></li>
+        <li><a href="#" id="loadInfo"><i class="fas fa-info-circle"></i> Info. Sistema</a></li>
+        <li><a href="{{ url_for('logout') }}" style="color: #ffcccc;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+    </ul>
+  </nav>
+
+  <div id="sidebar-overlay"></div>
+
+  <main id="main-content">
+    <div id="dashboard-default-content">
+        <h2>Visão Geral</h2>
+        <div class="kpi-cards">
+            <div class="card kpi-card total">
+                <!-- <i class="fas fa-paperclip"></i> -->
+                <h3>Total de Atestados</h3>
+                <p>{{ kpis.total_atestados }}</p>
+            </div>
+            <div class="card kpi-card pending">
+                <!-- <i class="fas fa-exclamation-triangle"></i> -->
+                <h3>Atestados Pendentes</h3>
+                <p>{{ kpis.atestados_pendentes }}</p>
+            </div>
+        </div>
+        <div class="alert-box pending-alert">
+            <!-- <i class="fas fa-bell"></i> -->
+            <p><strong>ALERTA:</strong> Atestados enviados precisam de atenção. Clique em <strong>Gerenciar Atestados</strong> no menu lateral.</p>
+        </div>
+    </div>
+    
+    <div id="dynamic-content"></div>
+
+  </main>
+
+  <footer>
+    <p class="notranslate" translate="no">Seal Health © 2025 - Admin</p>
+  </footer>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+    // Variável  para a URL da API (para o script de aprovação)
+    const API_UPDATE_URL = '{{ url_for("api_update_atestado") }}';
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const overlay = document.getElementById('sidebar-overlay');
+        const dynamicContent = document.getElementById('dynamic-content');
+        const dashboardDefault = document.getElementById('dashboard-default-content');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        menuToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // funcao
+        function loadPage(url, isAtestados = false) {
+            dashboardDefault.style.display = 'none';
+            dynamicContent.innerHTML = '<p style="text-align:center">Carregando...</p>'; // Feedback visual
+
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    dynamicContent.innerHTML = html;
+                    if (sidebar.classList.contains('open')) toggleSidebar();
+
+                    // SE FOR A PÁGINA DE ATESTADOS, INICIA O DATATABLES AGORA
+                    if (isAtestados) {
+                        initDataTables();
+                    }
+                })
+                .catch(err => {
+                    dynamicContent.innerHTML = "<p style='color:red; text-align:center;'>Erro ao carregar a página.</p>";
+                    console.error(err);
+                });
+        }
+
+        // --- INICIALIZA O DATATABLES ---
+        function initDataTables() {
+             // Verifica se a tabela existe antes de tentar transformar
+            if ($('#tabelaAtestados').length) {
+                // Se já existir uma instância antiga, destrói para recriar
+                if ($.fn.DataTable.isDataTable('#tabelaAtestados')) {
+                    $('#tabelaAtestados').DataTable().destroy();
+                }
+
+                $('#tabelaAtestados').DataTable({
+                    responsive: true,
+                    "language": {
+                        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                    },
+                    "order": [[ 3, "desc" ]] // Ordena pela coluna Data
+                });
+            }
+        }
+
+        // Eventos de Clique
+        document.getElementById('loadDashboard').addEventListener('click', (e) => {
+             e.preventDefault();
+             dashboardDefault.style.display = 'block';
+             dynamicContent.innerHTML = '';
+             if (sidebar.classList.contains('open')) toggleSidebar();
+        });
+        
+        document.getElementById('loadAtestados').addEventListener('click', (e) => {
+            e.preventDefault();
+            // Passamos TRUE no segundo parametro para avisar que precisa do DataTables
+            loadPage("{{ url_for('admin_gestao_atestados') }}", true);
+        });
+        
+        document.getElementById('loadCadastro').addEventListener('click', (e) => {
+            e.preventDefault();
+            loadPage("{{ url_for('admin_cadastro_usuarios') }}");
+        });
+        
+        document.getElementById('loadBusca').addEventListener('click', (e) => {
+            e.preventDefault();
+            loadPage("{{ url_for('admin_busca') }}");
+        });
+        
+        document.getElementById('loadInfo').addEventListener('click', (e) => {
+            e.preventDefault();
+            dynamicContent.innerHTML = `
+                <div class="table-container" style="padding:20px; background:white; border-radius:8px;">
+                    <h2>Informações do Sistema</h2>
+                    <p><strong>Versão:</strong> 1.0 (TCC 2025)</p>
+                    <p><strong>Status:</strong> Operacional</p>
+                </div>`;
+             dashboardDefault.style.display = 'none';
+             if (sidebar.classList.contains('open')) toggleSidebar();
+        });
+    });
+
+    // --- FUNÇÃO GLOBAL DE APROVAR/REJEITAR (Movi para cá para funcionar sempre) ---
+    function updateAtestado(id, status) {
+        let statusText = status === 1 ? 'Aprovar' : 'Rejeitar';
+        let confirmColor = status === 1 ? '#28a745' : '#dc3545';
+
+        Swal.fire({
+            title: `Confirmar ${statusText}?`,
+            text: `Deseja realmente ${statusText.toLowerCase()} o atestado #${id}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: confirmColor,
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: `Sim, ${statusText}`,
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(API_UPDATE_URL, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, status: status })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Sucesso!', `Atestado ${statusText.toLowerCase()} com sucesso.`, 'success');
+                        
+                        // Atualiza visualmente 
+                        let badge = document.getElementById(`status-${id}`);
+                        let actionsDiv = document.getElementById(`actions-${id}`);
+                        
+                        if(badge && actionsDiv) {
+                            badge.className = 'status-badge'; 
+                            if(status === 1) {
+                                badge.classList.add('status-1');
+                                badge.textContent = 'APROVADO';
+                            } else {
+                                badge.classList.add('status-2');
+                                badge.textContent = 'REJEITADO';
+                            }
+                            actionsDiv.innerHTML = '<span style="color: #aaa;">—</span>';
+                        }
+                    } else {
+                        Swal.fire('Erro!', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Erro de Rede', 'Não foi possível conectar ao servidor.', 'error');
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

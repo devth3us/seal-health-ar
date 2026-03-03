@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/login_admin.css') }}">
+  <title>administrador</title>
+ 
+</head>
+<body>
+  <div class="login-box">
+    <h2>Login Administrador</h2>
+    <form action="/auth_admin" method="POST">
+      <input type="email" name="email" placeholder="E-mail" required>
+      <input type="password" name="senha" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+
+    </form>
+    
+  </div>
+</body>
+</html>

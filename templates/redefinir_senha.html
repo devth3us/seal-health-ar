@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title class="notranslate" translate="no">Redefinir Senha - Seal Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/redefinir_senha.css') }}">
+</head>
+<body>
+    <header class="cabecalho" class="notranslate" translate="no"> Seal Health </header>
+    <main>
+        <div class="login-container">
+            <h2>Redefinir Senha</h2>
+            <form action="{{ url_for('recuperar.salvar_nova_senha') }}" method="POST">
+                <div class="input-group">
+                    <input type="password" name="senha" placeholder=" " required>
+                    <label for="senha">Nova senha</label>
+                </div>
+                <button type="submit">Salvar nova senha</button>
+            </form>
+        </div>
+    </main>
+    <footer class="notranslate" translate="no"> &copy; 2025 Seal Health </footer>
+</body>
+</html>

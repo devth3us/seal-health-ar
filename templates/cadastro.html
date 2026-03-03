@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/cadastro.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Cadastro</h2>
+    <form id="cadastroForm" action="{{ url_for('register') }}" method="POST">
+      <input type="text" name="nome" placeholder="Nome completo" required><br>
+      <input type="email" name="email" placeholder="Seu e-mail" required><br>
+      <input type="password" name="senha" placeholder="Sua senha" required><br>
+      <input type="text" id="cpf" name="cpf" placeholder="CPF (apenas números)" required maxlength="11"><br>
+      <input type="text" name="tel" placeholder="Telefone" required><br>
+      <input type="date" id="dt_nasc" name="dt_nasc" placeholder="Data de Nascimento" required><br>
+
+      <!-- CEP logo abaixo da data de nascimento -->
+      <input type="text" id="cep" name="cep" placeholder="CEP" maxlength="9" required><br>
+
+      <input type="text" id="endereco" name="endereco" placeholder="Endereço" required><br>
+      <input type="text" name="num_casa" placeholder="Número da casa" required><br>
+      <input type="text" name="complemento_ende" placeholder="Complemento"><br>
+      <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly><br>
+      <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly><br>
+      <input type="text" id="estado" name="estado" placeholder="Estado" readonly><br>
+
+      <select name="tipo" required>
+        <option value="">Selecione o tipo</option>
+        <option value="US">(US)</option>
+        <option value="ADM">(ADM)</option>
+      </select><br><br>
+
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <p>Já tem conta? <a href="{{ url_for('cadastro') }}">Fazer Login</a></p>
+  </div>
+
+  <!-- parte dos nossos SweetAlert  bonitinho -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+        const msg = "{{ messages[0] }}";
+        if (msg === "registered") {
+          Swal.fire({
+            icon: "success",
+            title: "Cadastro realizado com sucesso!",
+            confirmButtonText: "OK"
+          }).then(() => {
+            window.location.href = "/";
+          });
+        } else if (msg === "register_error") {
+          Swal.fire({
+            icon: "error",
+            title: "Erro no cadastro",
+            text: "Verifique os dados e tente novamente.",
+            confirmButtonText: "OK"
+          });
+        }
+      </script>
+    {% endif %}
+  {% endwith %}
+
+  <script>
+    // --- um calculo do CPF ---
+    function validarCPF(cpf) {
+      cpf = cpf.replace(/[^\d]+/g,'');
+      if(cpf == '' || cpf.length != 11) return false;
+      if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+      let soma = 0, resto;
+      for (let i=1; i<=9; i++) soma += parseInt(cpf.substring(i-1,i)) * (11-i);
+      resto = (soma * 10) % 11;
+      if ((resto == 10) || (resto == 11)) resto = 0;
+      if (resto != parseInt(cpf.substring(9,10))) return false;
+
+      soma = 0;
+      for (let i=1; i<=10; i++) soma += parseInt(cpf.substring(i-1,i)) * (12-i);
+      resto = (soma * 10) % 11;
+      if ((resto == 10) || (resto == 11)) resto = 0;
+      if (resto != parseInt(cpf.substring(10,11))) return false;
+
+      return true;
+    }
+
+    // ---fazendo a busca do CEP (ViaCEP) como o Prof Marcos Costa falou ---
+    document.getElementById("cep").addEventListener("blur", async function(){
+      let cep = this.value.replace(/\D/g, '');
+      if(cep.length !== 8){ 
+        Swal.fire("CEP inválido!", "Digite um CEP com 8 números.", "error");
+        return;
+      }
+
+      try {
+        let response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        let data = await response.json();
+
+        if(data.erro){
+          Swal.fire("CEP não encontrado!", "", "error");
+        } else {
+          document.getElementById("endereco").value = data.logradouro || "";
+          document.getElementById("bairro").value = data.bairro || "";
+          document.getElementById("cidade").value = data.localidade || "";
+          document.getElementById("estado").value = data.uf || "";
+        }
+      } catch (e){
+        Swal.fire("Erro ao buscar CEP.", "", "error");
+      }
+    });
+
+    // --- Validação antes de enviar ---
+    document.getElementById("cadastroForm").addEventListener("submit", function(e){
+      let cpf = document.getElementById("cpf").value;
+      let nasc = document.getElementById("dt_nasc").value;
+
+      if(!validarCPF(cpf)){
+        e.preventDefault();
+        Swal.fire("CPF inválido!", "", "error");
+        return;
+      }
+
+      
+    });
+  </script>
+</body>
+</html>

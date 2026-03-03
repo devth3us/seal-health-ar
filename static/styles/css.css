@@ -1,0 +1,52 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #11d7e6;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    main {
+      display: flex;
+      flex: 1;
+    }
+
+    aside {
+      width: 200px;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    section {
+      flex: 1;
+      padding: 20px;
+      background: #fff;
+    }
+   
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+
+
+    .mascote {
+  position: fixed;   /* fixa a imagem mesmo rolando a página */
+  right: 3px;       /* distância da borda direita */
+  bottom: 0px;      /* distância da borda inferior */
+  width: 340px;      /* tamanho da imagem */
+  height: auto;      /* mantém proporção */
+}

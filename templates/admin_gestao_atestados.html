@@ -1,0 +1,116 @@
+<style>
+    /* Container da Tabela */
+    .table-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    /* Estilo do DataTables Customizado */
+    #tabelaAtestados thead th {
+        background-color: #007b8f;
+        color: white;
+        text-transform: uppercase;
+        font-size: 13px;
+        padding: 12px;
+        border-bottom: none;
+    }
+
+    #tabelaAtestados tbody td {
+        font-size: 14px;
+        padding: 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #eee;
+    }
+
+    #tabelaAtestados tbody tr:hover {
+        background-color: #e0f7fa;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: rgb(0, 0, 0);
+        font-size: 11px;
+        text-transform: uppercase;
+        display: inline-block;
+        min-width: 80px;
+        text-align: center;
+    }
+    .status-0 { background-color: #ffc107; color: #444; }
+    .status-1 { background-color: #28a745; }
+    .status-2 { background-color: #dc3545; }
+
+    .btn-action {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        margin-right: 5px;
+        transition: transform 0.1s;
+    }
+    .btn-approve { background-color: #28a745; color: white; }
+    .btn-reject { background-color: #dc3545; color: white; }
+    .btn-action:hover { transform: scale(1.05); opacity: 0.9; }
+    
+    /* Ajustes visuais do DataTables */
+    .dataTables_wrapper .dataTables_filter input { border: 1px solid #ccc; border-radius: 4px; padding: 4px; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #007b8f !important; color: white !important; border: 1px solid #007b8f !important;
+    }
+</style>
+
+<div class="table-container">
+    <h3 style="color: #007b8f; margin-bottom: 20px;">Gerenciamento de Atestados</h3>
+
+    <table id="tabelaAtestados" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Descrição</th>
+                <th>Data Envio</th>
+                <th>Arquivo</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for atestado in atestados %}
+            <tr id="row-{{ atestado.id }}">
+                <td>{{ atestado.id }}</td>
+                <td>
+                    <strong>{{ atestado.nome }}</strong><br>
+                    <span style="font-size: 12px; color: #666;">{{ atestado.email }}</span>
+                </td>
+                <td>{{ atestado.descricao }}</td>
+                <td>{{ atestado.data_envio_formatada }}</td>
+                <td>
+                    <a href="{{ url_for('static', filename=atestado.caminho) }}" target="_blank" style="color: #007b8f; font-weight: bold; text-decoration: none;">
+                        <i class="fas fa-file-pdf"></i> Ver Arquivo
+                    </a>
+                </td>
+                <td>
+                    <span id="status-{{ atestado.id }}" class="status-badge status-{{ atestado.status }}">
+                        {{ 'PENDENTE' if atestado.status == 0 else ('APROVADO' if atestado.status == 1 else 'REJEITADO') }}
+                    </span>
+                </td>
+                <td>
+                    <div id="actions-{{ atestado.id }}">
+                        {% if atestado.status == 0 %}
+                            <button onclick="updateAtestado([[ atestado.id ]], 1)" class="btn-action btn-approve" title="Aprovar"><i class="fas fa-check"></i></button>
+                            <button onclick="updateAtestado([[ atestado.id ]], 2)" class="btn-action btn-reject" title="Rejeitar"><i class="fas fa-times"></i></button>
+                        {% else %}
+                            <span style="color: #aaa;">—</span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
