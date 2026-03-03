@@ -194,10 +194,11 @@ def enviar_codigo():
                 msg["To"] = email
                 msg.attach(MIMEText(html, "html"))
 
-                # Enviar via SMTP Gmail
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                # Enviar via SMTP hostinguer
+                with smtplib.SMTP("smtp.hostinger.com", 587) as server:
+                    server.starttls()
                     server.login(EMAIL_USER, EMAIL_PASS)
-                    server.send_message(msg)
+                    server.send_message(msg) 
 
                 print("Código enviado por e-mail com sucesso.")
 
