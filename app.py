@@ -28,9 +28,9 @@ EMAIL_PASS = "Math8080@"
 
 # Configurações do Flask-Mail para Hostinger
 app.config['MAIL_SERVER'] = 'smtp.hostinger.com' # Servidor SMTP da Hostinger
-app.config['MAIL_PORT'] = 465 # Porta recomendada pela Hostinger
-app.config['MAIL_USE_TLS'] = False # Desativa o TLS
-app.config['MAIL_USE_SSL'] = True # Ativa o SSL (segurança da porta 465)
+app.config['MAIL_PORT'] = 587 # Porta recomendada pela Hostinger
+app.config['MAIL_USE_TLS'] = True # Desativa o TLS
+app.config['MAIL_USE_SSL'] = False # Ativa o SSL (segurança da porta 465)
 app.config['MAIL_USERNAME'] = EMAIL_USER 
 app.config['MAIL_PASSWORD'] = EMAIL_PASS
 app.config['MAIL_DEFAULT_SENDER'] = EMAIL_USER
@@ -46,8 +46,6 @@ db_config = {
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
-
-
 
 #  Inicializa o Flask-Mail e registra o Blueprint
 mail.init_app(app) 
