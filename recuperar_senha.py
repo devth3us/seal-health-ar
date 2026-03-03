@@ -78,7 +78,7 @@ def enviar_codigo():
                 conn.commit()
 
               
-                reset_link = f"http://localhost:8080/redefinir_senha_temp?token={codigo}&cpf={user['cpf']}"
+                reset_link = f"http://www.sealhealth.org/redefinir_senha_temp?token={codigo}&cpf={user['cpf']}"
 
                
                
