@@ -3,3 +3,4 @@ Flask-Mail
 PyMySQL
 Werkzeug
 gunicorn
+requests
