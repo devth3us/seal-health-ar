@@ -6,6 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.security import generate_password_hash
+import requests
 
 
 # nosssa logo esta no site imgur:
@@ -77,11 +78,9 @@ def enviar_codigo():
                 """, (user["cpf"], codigo, expiracao, 0))
                 conn.commit()
 
-              
-                reset_link = f"http://www.sealhealth.org/redefinir_senha_temp?token={codigo}&cpf={user['cpf']}"
+                # Link ajustado para HTTPS oficial do projeto
+                reset_link = f"https://www.sealhealth.org/redefinir_senha_temp?token={codigo}&cpf={user['cpf']}"
 
-               
-               
                 html = f"""
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -187,27 +186,36 @@ def enviar_codigo():
 </html>
 """
 
-                # Montar e enviar o e-mail
-                msg = MIMEMultipart("alternative")
-                msg["Subject"] = "Recuperação de Senha - Seal Health"
-                msg["From"] = EMAIL_USER
-                msg["To"] = email
-                msg.attach(MIMEText(html, "html"))
-
-                # Enviar via SMTP hostinguer
-                with smtplib.SMTP("smtp.hostinger.com", 587) as server:
-                    server.starttls()
-                    server.login(EMAIL_USER, EMAIL_PASS)
-                    server.send_message(msg) 
-
-                print("Código enviado por e-mail com sucesso.")
-
-                flash("E-mail de redefinição enviado! Verifique sua caixa de entrada.")
-                return redirect(url_for("recuperar.verificar_codigo", cpf=user["cpf"]))
+                url = "https://api.brevo.com/v3/smtp/email"
+                
+                headers = {
+                    "accept": "application/json",
+                    "api-key": "xsmtpsib-5d10ec2422a7e30ed4bb0b373bd540f3aa1c759b01c86f748028975c08cf8653-cCXwH63eh38M7bCg", # <--- Substitua aqui!
+                    "content-type": "application/json"
+                }
+                
+                payload = {
+                    "sender": {"name": "Suporte Seal Health", "email": "sealhealthsuporte@sealhealth.org"},
+                    "to": [{"email": email, "name": user['nome']}],
+                    "subject": "Recuperação de Senha - Seal Health",
+                    "htmlContent": html
+                }
+                
+                # Fazendo a requisição web para a API
+                resposta = requests.post(url, json=payload, headers=headers)
+                
+                if resposta.status_code in [200, 201, 202]:
+                    print("Código enviado via API com sucesso!")
+                    flash("E-mail de redefinição enviado! Verifique sua caixa de entrada.")
+                    return redirect(url_for("recuperar.verificar_codigo", cpf=user["cpf"]))
+                else:
+                    print(f"Erro na API: {resposta.status_code} - {resposta.text}")
+                    flash("Erro no servidor de e-mail. Tente novamente mais tarde.")
+                    return redirect(url_for(".esqueci_senha"))
 
     except Exception as e:
-        print("Erro ao enviar código:", e)
-        flash("Erro ao enviar o código. Tente novamente.")
+        print("Erro interno ao enviar código:", e)
+        flash("Erro ao processar a solicitação. Tente novamente.")
         return redirect(url_for(".esqueci_senha"))
 
 
