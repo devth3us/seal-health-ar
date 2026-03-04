@@ -22,6 +22,14 @@ from recuperar_senha import recuperar
 
 
 
+UPLOAD_FOLDER = 'static/uploads' 
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+
 # Configuração do e-mail
 EMAIL_USER = "sealhealthsuporte@sealhealth.org"
 EMAIL_PASS = "Math8080@" 
