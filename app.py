@@ -10,6 +10,10 @@ import pymysql
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import json
+import string
+import random
+import requests
+
 
 # Importa os Blueprints
 from recuperar_senha import recuperar  
@@ -274,6 +278,83 @@ def register():
         print("Erro no cadastro:", e)
         flash("register_error")
         return redirect(url_for("cadastro"))
+
+
+@app.route("/admin/enviar_convite", methods=["POST"])
+def enviar_convite():
+    if "admin" not in session:
+        flash("Sessão expirada. Faça login novamente.", "error")
+        return redirect(url_for("login_admin"))
+
+    cpf = request.form.get("cpf")
+    nome = request.form.get("nome")
+    email = request.form.get("email")
+    tipo = request.form.get("tipo")
+
+    # 1. Gera uma senha provisória aleatória de 6 letras/números
+    senha_temp = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    senha_hash = generate_password_hash(senha_temp)
+
+    try:
+        with pymysql.connect(**db_config) as conn:
+            with conn.cursor() as cursor:
+                # Verifica se o CPF já existe para não dar erro no banco
+                cursor.execute("select cpf from pessoa where cpf=%s", (cpf,))
+                if cursor.fetchone():
+                    flash("Este CPF já está cadastrado no sistema.", "error")
+                    return redirect(url_for("admin_cadastro_usuarios"))
+
+                # Insere os dados básicos e deixa o resto em branco/padrão para o usuário preencher depois
+                # A data padrão '2000-01-01' evita erro de SQL se o campo for obrigatório
+                cursor.execute("""
+                    insert into pessoa 
+                    (cpf, nome, email, senha, dt_nasc, cep, num_ende, complemento_ende, tell, tipo)
+                    values (%s, %s, %s, %s, '2000-01-01', '', '', '', '', %s)
+                """, (cpf, nome, email, senha_hash, tipo))
+                conn.commit()
+
+        # 2. Prepara o e-mail de convite lindão
+        chave_api = os.environ.get("CHAVE_RESEND")
+        
+        html_email = f"""
+        <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 30px;">
+            <div style="background: white; max-width: 500px; margin: auto; padding: 30px; border-radius: 10px; border-top: 5px solid #007b8f; text-align: center;">
+                <h2 style="color: #007b8f;">Bem-vindo ao Seal Health!</h2>
+                <p>Olá <strong>{nome}</strong>, você foi convidado pela administração para acessar nosso sistema.</p>
+                <p>Seus dados de acesso temporários são:</p>
+                <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; font-size: 18px; margin: 20px 0; font-weight: bold; color: #333;">
+                    E-mail: {email}<br>
+                    Senha provisória: {senha_temp}
+                </div>
+                <p>Recomendamos que você acesse o sistema e faça a redefinição da sua senha e complete seu perfil o mais rápido possível.</p>
+                <a href="https://sealhealth.org" style="display: inline-block; background: #007b8f; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 15px;">Acessar o Sistema</a>
+            </div>
+        </div>
+        """
+
+        # 3. Dispara via Resend
+        url = "https://api.resend.com/emails"
+        headers = {
+            "Authorization": f"Bearer {chave_api}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "from": "Seal Health <onboarding@resend.dev>",
+            "to": [email], 
+            "subject": "Você foi convidado! - Seal Health",
+            "html": html_email
+        }
+        
+        requests.post(url, json=payload, headers=headers)
+
+        flash("Convite enviado com sucesso! O usuário já pode acessar o sistema.", "success")
+        return redirect(url_for("admin_cadastro_usuarios"))
+
+    except Exception as e:
+        print("Erro ao cadastrar convite:", e)
+        flash("Erro interno ao processar o cadastro.", "error")
+        return redirect(url_for("admin_cadastro_usuarios"))
+
 
 @app.route("/admin/usuarios")
 def admin_usuarios():
