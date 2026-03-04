@@ -369,10 +369,21 @@ def logout():
 
 @app.route("/api/buscar_usuario")
 def api_buscar_usuario():
+    # 1. Proteção de Segurança: Só o Admin pode fazer a busca
+    if "admin" not in session:
+        return jsonify({"error": "Acesso não autorizado"}), 401
+
     termo = request.args.get("email")  
+    
+    # 2. Verifica se o termo está vazio
+    if not termo:
+        return jsonify({"error": "Termo de busca vazio"}), 400
+
     try:
         with pymysql.connect(**db_config) as conn:
-            with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            with conn.cursor() as cursor: # Usamos o cursor Dict padrão já configurado no db_config
+                
+                # Busca o usuário pelo Nome, CPF ou E-mail
                 cursor.execute("""
                     select cpf, nome, email, dt_nasc, cep, num_ende, complemento_ende, tell, tipo
                     from pessoa
@@ -381,8 +392,9 @@ def api_buscar_usuario():
                 usuarios = cursor.fetchall()
 
                 if not usuarios:
-                    return {"error": "Nenhum usuário encontrado"}
+                    return jsonify({"error": "Nenhum usuário encontrado"})
 
+                
                 for user in usuarios:
                     cursor.execute("""
                         select descricao, DATE_FORMAT(data_envio, '%d/%m/%Y %H:%i') as data_envio
@@ -391,11 +403,12 @@ def api_buscar_usuario():
                     """, (user["cpf"],))
                     user["atestados"] = cursor.fetchall()
 
-                return {"usuarios": usuarios}
+                
+                return jsonify({"usuarios": usuarios})
 
     except Exception as e:
         print("Erro ao buscar usuário:", e)
-        return {"error": "Erro interno"}
+        return jsonify({"error": "Erro interno no servidor"}), 500
 
 
 if __name__ == "__main__":
