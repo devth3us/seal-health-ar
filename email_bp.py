@@ -95,7 +95,7 @@ def enviar_notificacao_atestado(nome_usuario, destinatario_email, nome_arquivo):
                   <p><strong>Arquivo:</strong> {nome_arquivo}</p>
 
                   <p style="margin-top: 20px; color: #000000 " class="aaa">Clique no botão abaixo para acessar o sistema e validar o documento:</p>
-                  <a style="color: white;" href="https://sealhealth.app.br" class="button">Ir para o Sistema</a>
+                  <a style="color: white;" href="https://sealhealth.org" class="button">Ir para o Sistema</a>
 
                   <p style="margin-top:20px; font-size:13px; color:#666;">
                     Essa é uma mensagem automática. Por favor, não responda este e-mail.
