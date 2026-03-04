@@ -559,8 +559,55 @@ footer {
 }
 
 @media screen and (min-width: 992px) {
-    /* garante que o conteudo nao seja empurrado */
     #main-content {
         margin-left: 0;
+    }
+}
+
+ /* parte do celular */
+@media screen and (max-width: 768px) {
+    header {
+        padding: 10px 15px;
+    }
+    header h1 {
+        font-size: 20px;
+    }
+    .atestado-item {
+        flex-direction: column;
+        align-items: flex-start; /* Alinha tudo à esquerda */
+        gap: 10px;
+        position: relative; /* Para mover o status */
+    }
+    .atestado-item .status {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+    .atestado-item p {
+        margin-top: 25px; 
+        font-size: 15px;
+    }
+    .modal-content {
+        width: 95%;
+        padding: 20px 15px;
+        margin-top: 20px; /* Evita colar no topo do celular */
+    }
+    .upload-area {
+        padding: 15px 10px;
+    }
+    .font-size-controls {
+        flex-wrap: wrap; /* Se os botões não couberem, quebra a linha */
+        gap: 10px;
+    }
+    #cameraButton {
+        bottom: 60px; /* Sobe um pouco mais */
+        right: 20px;  /* Fica mais perto do canto */
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+    .kpi-card {
+        width: 100%;
+        min-width: unset; /* Tira o limite mínimo para caber na tela */
     }
 }
