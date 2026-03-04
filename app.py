@@ -491,7 +491,7 @@ def api_buscar_usuario():
         print("Erro ao buscar usuário:", e)
         return jsonify({"error": "Erro interno no servidor"}), 500
 
-
+#teste
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
