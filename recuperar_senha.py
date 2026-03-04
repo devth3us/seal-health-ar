@@ -191,7 +191,7 @@ def enviar_codigo():
                 
                 headers = {
                     "accept": "application/json",
-                    "api-key": os.environ.get("CHAVE"), 
+                    "api-key": os.environ.get("CHAVE_RESEND"), 
                     "content-type": "application/json"
                 }
                 
