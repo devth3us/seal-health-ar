@@ -69,6 +69,87 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
+    function realizarBusca() {
+        const termo = document.getElementById('termoBusca').value;
+        const resultadosDiv = document.getElementById('resultados');
+        const loading = document.getElementById('loading');
+
+        if (!termo) {
+            Swal.fire("Atenção", "Digite algo para pesquisar.", "warning");
+            return;
+        }
+
+        // Limpa resultados anteriores e mostra loading
+        resultadosDiv.innerHTML = '';
+        loading.style.display = 'block';
+
+        // Chama a API que criamos no app.py
+        fetch(`/api/buscar_usuario?email=${termo}`)
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+
+                if (data.error || !data.usuarios || data.usuarios.length === 0) {
+                    resultadosDiv.innerHTML = '<p style="text-align:center; color:#666;">Nenhum usuário encontrado.</p>';
+                    return;
+                }
+
+                // Para cada usuário encontrado, cria um Card HTML
+                data.usuarios.forEach(user => {
+                    let atestadosHtml = '';
+                    if (user.atestados && user.atestados.length > 0) {
+                        user.atestados.forEach(att => {
+                            atestadosHtml += `
+                                <div class="mini-item">
+                                    <span>${att.descricao}</span>
+                                    <span style="color:#666;">${att.data_envio}</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        atestadosHtml = '<p style="font-size:12px; color:#999;">Nenhum atestado enviado.</p>';
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'user-card';
+                    card.innerHTML = `
+                        <div class="user-header">
+                            <h3>${user.nome}</h3>
+                            <span style="font-weight:bold; color: #007b8f;">${user.tipo}</span>
+                        </div>
+                        <div class="user-info">
+                            <p><strong>CPF:</strong> ${user.cpf}</p>
+                            <p><strong>E-mail:</strong> ${user.email}</p>
+                            <p><strong>Telefone:</strong> ${user.tell}</p>
+                            <p><strong>Endereço:</strong> ${user.cep}, ${user.num_ende}</p>
+                        </div>
+                        
+                        <div class="atestados-mini-list">
+                            <h4>📄 Histórico de Atestados</h4>
+                            ${atestadosHtml}
+                        </div>
+                    `;
+                    resultadosDiv.appendChild(card);
+                });
+            })
+            .catch(err => {
+                loading.style.display = 'none';
+                console.error(err);
+                Swal.fire("Erro", "Erro ao buscar dados. Verifique a conexão.", "error");
+            });
+    }
+
+    // Como o campo de busca pode ser carregado depois, vamos usar delegação de eventos para o botão Enter
+    document.addEventListener('keypress', function (e) {
+        if (e.target && e.target.id === 'termoBusca') {
+            if (e.key === 'Enter') {
+                realizarBusca();
+            }
+        }
+    });
+</script>
+
+<script>
     // Variável  para a URL da API (para o script de aprovação)
     const API_UPDATE_URL = '{{ url_for("api_update_atestado") }}';
 
