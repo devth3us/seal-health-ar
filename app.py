@@ -1,51 +1,37 @@
 # Instruções para rodar o projeto
-#Sealhelthemail@gmail.com
-#pip install Flask-Mail
-#pip install Flask
-#pip install pymysql
-
+# Sealhealth.email@gmail.com
+# pip install Flask
+# pip install pymysql
+# pip install requests (Necessário para a Resend)
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from recuperar_senha import recuperar  
-from email_bp import mail, email_bp, enviar_notificacao_atestado
-from datetime import datetime
-import pymysql
 import os
+import pymysql
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 import json
-from datetime import timedelta
+
+# Importa os Blueprints
+from recuperar_senha import recuperar  
+from email_bp import email_bp, enviar_notificacao_atestado # Removido o import do 'mail'
 
 app = Flask(__name__)
-
 app.secret_key = "seal_health"
-from recuperar_senha import recuperar
 
-
-
-UPLOAD_FOLDER = 'static/uploads' 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+# ==========================================
+# 1. PROTEÇÃO DA PASTA DE UPLOADS NO RENDER
+# ==========================================
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024 
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "pdf"}
 
-
-
-# Configuração do e-mail
-EMAIL_USER = "sealhealthsuporte@sealhealth.org"
-EMAIL_PASS = "Math8080@" 
-
-# Configurações do Flask-Mail para Hostinger
-app.config['MAIL_SERVER'] = 'smtp.hostinger.com' # Servidor SMTP da Hostinger
-app.config['MAIL_PORT'] = 587 # Porta recomendada pela Hostinger
-app.config['MAIL_USE_TLS'] = True # Desativa o TLS
-app.config['MAIL_USE_SSL'] = False # Ativa o SSL (segurança da porta 465)
-app.config['MAIL_USERNAME'] = EMAIL_USER 
-app.config['MAIL_PASSWORD'] = EMAIL_PASS
-app.config['MAIL_DEFAULT_SENDER'] = EMAIL_USER
-
-
-# Função para conectar ao banco 
-# Configuração do banco de dados
+# ==========================================
+# 2. CONFIGURAÇÃO DO BANCO DE DADOS
+# ==========================================
 db_config = {
     'host': '108.179.193.125',
     'user': 'marcos12_adm',
@@ -55,31 +41,23 @@ db_config = {
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-#  Inicializa o Flask-Mail e registra o Blueprint
-mail.init_app(app) 
+# ==========================================
+# 3. REGISTRO DE ROTAS (BLUEPRINTS)
+# ==========================================
 app.register_blueprint(email_bp)
 app.register_blueprint(recuperar)
-app.secret_key = "chave-secreta"
 
-
-app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024 
-
-
+# ==========================================
+# FUNÇÕES GERAIS
+# ==========================================
 @app.errorhandler(413)
 def request_entity_too_large(error):
     flash("O arquivo enviado é muito grande. O limite é 3 MB.")
     return redirect(request.url)
 
-# Configuração dos tipos de upload de atestado
-UPLOAD_FOLDER = "static/uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "pdf"}
-
-# Função para verificar se o arquivo é permitido
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() #i
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Função para verificar usuário no banco
 def verificar_usuario(email, senha):
     try:
         with pymysql.connect(**db_config) as conn:
@@ -92,7 +70,9 @@ def verificar_usuario(email, senha):
         print("Erro ao verificar usuário:", e)
     return None
 
-# Escolha de perfil
+# ==========================================
+# ROTAS DO SISTEMA
+# ==========================================
 @app.route("/")
 def escolha():
     return render_template("escolha.html")
@@ -101,8 +81,6 @@ def escolha():
 def esqueci_senha():
     return render_template("esqueci_senha.html")
 
-
-# Login Usuário US
 @app.route("/login_usuario")
 def login_usuario():
     return render_template("index.html")
@@ -121,13 +99,9 @@ def auth_usuario():
         flash("error")
         return redirect(url_for("login_usuario"))
 
-
-# Login Administrador ADM
 @app.route("/login_admin")
 def login_admin():
     return render_template("login_admin.html")
-
-
 
 @app.route("/auth_admin", methods=["POST"])
 def auth_admin():
@@ -143,8 +117,6 @@ def auth_admin():
         flash("error")
         return redirect(url_for("login_admin"))
 
-
-# Dashboard Usuário e Admin
 @app.route("/layout")
 def layout():
     if "usuario" not in session:
@@ -156,7 +128,6 @@ def layout():
     try:
         with pymysql.connect(**db_config) as conn:
             with conn.cursor() as cursor:
-                
                 cursor.execute("""
                     select descricao, id, caminho, 
                     DATE_FORMAT(data_envio, '%%d/%%m/%%Y') as data_bonita 
@@ -164,7 +135,6 @@ def layout():
                     where cpf = %s 
                     order by data_envio DESC
                 """, (user['cpf'],))
-                
                 atestados = cursor.fetchall()
     except Exception as e:
         print("Erro ao buscar atestados do usuário:", e)
@@ -176,27 +146,21 @@ def layout():
         atestados=atestados
     )
 
-
-
 @app.route("/dashboard_admin")
 def dashboard_admin():
     if "admin" not in session:
         return redirect(url_for("login_admin"))
     
     kpis = {}
-    conn = None # Inicializa a conexão como None
+    conn = None 
     
     try:
-        # Tenta estabelecer a conexão DENTRO DO BLOCO try
         conn = pymysql.connect(**db_config)
         with conn.cursor() as cursor:
-            
-            # Total de atestados enviados 
             cursor.execute("select count(*) as total from atestado")
             kpis['total_atestados'] = cursor.fetchone().get('total', 0)
             
-            # Atestados pendentes 
-            cursor.execute("select count(*) as pendentes from atestado where id= 0")
+            cursor.execute("select count(*) as pendentes from atestado where id= 0") # Mantido seu código original, mas talvez seja status='0'
             kpis['atestados_pendentes'] = cursor.fetchone().get('pendentes', 0)
             
     except pymysql.Error as e:
@@ -205,7 +169,6 @@ def dashboard_admin():
         kpis['total_atestados'] = 'ERRO DE DB'
         kpis['atestados_pendentes'] = 'ERRO DE DB'
     except OSError as e:
-        # Captura Argumento Invalido / Falha de rede
         print("Erro de Rede/SO:", e)
         flash("Falha de rede. Servidor de DB inacessível (Argumento Inválido).")
         kpis['total_atestados'] = 'ERRO DE REDE'
@@ -215,19 +178,12 @@ def dashboard_admin():
         flash("Erro interno ao carregar o painel.")
         kpis['total_atestados'] = 'ERRO'
         kpis['atestados_pendentes'] = 'ERRO'
-        
     finally:
-        # Garante que a conexão seja fechada, se tiver sido aberta
         if conn:
             conn.close()
 
-    return render_template(
-        "dashboard_admin.html", 
-        user=session["admin"],
-        kpis=kpis
-    )
+    return render_template("dashboard_admin.html", user=session["admin"], kpis=kpis)
 
-# Admin: Listagem e Gestão de Atestados 
 @app.route("/admin/gestao_atestados")
 def admin_gestao_atestados():
     if "admin" not in session:
@@ -236,7 +192,6 @@ def admin_gestao_atestados():
     try:
         with pymysql.connect(**db_config) as conn:
             with conn.cursor() as cursor:
-                # Obtém todos os atestados para revisão, juntando dados do usuário
                 cursor.execute("""
                     select
                         a.id, a.descricao, a.cpf, a.caminho, a.id, 
@@ -247,23 +202,18 @@ def admin_gestao_atestados():
                     order by a.data_envio DESC
                 """)
                 atestados = cursor.fetchall()
-                
     except Exception as e:
         print("Erro ao listar atestados:", e)
         atestados = []
 
     return render_template("admin_gestao_atestados.html", atestados=atestados)
 
-
-# Admin: Cadastro 
 @app.route("/admin/cadastro_usuarios")
 def admin_cadastro_usuarios():
     if "admin" not in session:
         return redirect(url_for("login_admin"))
     return render_template("admin_cadastro_usuarios.html", is_admin_context=True)
 
-
-# A Acao de Atualizar Status do Atestado 
 @app.route("/api/update_atestado", methods=["POST"])
 def api_update_atestado():
     if "admin" not in session:
@@ -271,7 +221,7 @@ def api_update_atestado():
 
     data = request.get_json()
     atestado_id = data.get('id')
-    novo_status = data.get('status') # 1 para Aprovado, 2 para Rejeitado, 0 para Pendente
+    novo_status = data.get('status') 
 
     if not atestado_id or novo_status is None:
         return jsonify({"success": False, "message": "Dados inválidos"}), 400
@@ -284,10 +234,7 @@ def api_update_atestado():
                     (novo_status, atestado_id)
                 )
                 conn.commit()
-                
-        
         return jsonify({"success": True, "message": "Status atualizado com sucesso"})
-
     except Exception as e:
         print("Erro ao atualizar status do atestado:", e)
         return jsonify({"success": False, "message": "Erro interno do servidor"}), 500
@@ -303,10 +250,7 @@ def register():
         nome = request.form.get("nome")
         email = request.form.get("email")
         dt_nasc = request.form.get("dt_nasc")
-        
-      
         cep = request.form.get("cep", "").replace('-', '') 
-        
         num_ende = request.form.get("num_ende")
         complemento = request.form.get("complemento_ende")
         tell = request.form.get("tell")
@@ -326,14 +270,11 @@ def register():
 
         flash("registered")
         return redirect(url_for("login_usuario"))
-
     except Exception as e:
         print("Erro no cadastro:", e)
         flash("register_error")
         return redirect(url_for("cadastro"))
 
-
-# Paginas internas do Admin
 @app.route("/admin/usuarios")
 def admin_usuarios():
     if "admin" not in session:
@@ -352,8 +293,6 @@ def admin_busca():
         return redirect(url_for("login_admin"))
     return render_template("busca.html")
 
-
-# Rotas , anotando, talvez vou reutiliza essa duas rotas
 @app.route("/base")
 def base():
     return render_template("base.html")
@@ -362,9 +301,9 @@ def base():
 def busca():
     return render_template("busca.html")
 
-
-# Upload de atestados E NOTIFICAÇÃO 
-# Upload de atestados E NOTIFICAÇÃO 
+# ==========================================
+# 4. ROTA DE UPLOAD E NOTIFICAÇÃO
+# ==========================================
 @app.route("/upload", methods=["POST"])
 def upload_file():
     if "usuario" not in session:
@@ -375,7 +314,8 @@ def upload_file():
     descricao = request.form.get("descricao")
     file = request.files.get("file")
 
-    EMAIL_DO_RESPONSAVEL = "sealhealthsuporte@sealhealth.org"
+    # OBRIGATÓRIO SER ESTE E-MAIL PARA A API RESEND GRÁTIS FUNCIONAR:
+    EMAIL_DO_RESPONSAVEL = "sealhealth.email@gmail.com"
 
     try:
         with pymysql.connect(**db_config) as conn:
@@ -394,17 +334,17 @@ def upload_file():
                     data_hora = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                     filename = f"{primeiro_nome}_{data_hora}.{ext}"
 
-                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    # Usa a pasta blindada que criamos no topo do código
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     file.save(filepath)
 
-                    # Se você tiver uma coluna "status" no banco, recomendo já inserir como pendente (0)
                     cursor.execute(""" 
                         insert into atestado (descricao, cpf, caminho, status) 
                         values (%s, %s, %s, '0')
                     """, (descricao, cpf, filepath))
                     conn.commit()
 
-                    # Envio de notificação
+                    # Envio de notificação pela nova API (não trava o site)
                     enviar_notificacao_atestado(
                         nome_usuario=pessoa_info["nome"],
                         destinatario_email=EMAIL_DO_RESPONSAVEL,
@@ -413,7 +353,6 @@ def upload_file():
 
                     flash("Atestado enviado com sucesso!", "success")
                     return redirect(url_for("layout"))
-
                 else:
                     flash("Tipo de arquivo não permitido ou arquivo ausente.", "error")
                     return redirect(url_for("layout"))
@@ -423,23 +362,17 @@ def upload_file():
         flash("Erro interno durante o envio do atestado.", "error")
         return redirect(url_for("layout"))
 
-
-
-# Logout
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("escolha"))
 
-
-# de busca (para admin)
 @app.route("/api/buscar_usuario")
 def api_buscar_usuario():
     termo = request.args.get("email")  
     try:
         with pymysql.connect(**db_config) as conn:
             with conn.cursor(pymysql.cursors.DictCursor) as cursor:
-                
                 cursor.execute("""
                     select cpf, nome, email, dt_nasc, cep, num_ende, complemento_ende, tell, tipo
                     from pessoa
@@ -450,7 +383,6 @@ def api_buscar_usuario():
                 if not usuarios:
                     return {"error": "Nenhum usuário encontrado"}
 
-                # Busca atestados de todos os usuarios encontrados
                 for user in usuarios:
                     cursor.execute("""
                         select descricao, DATE_FORMAT(data_envio, '%d/%m/%Y %H:%i') as data_envio
@@ -465,19 +397,6 @@ def api_buscar_usuario():
         print("Erro ao buscar usuário:", e)
         return {"error": "Erro interno"}
 
-# -------------------------------
-# Iniciar o app
-# -------------------------------
-# if __name__ == "__main__":
-#     public_url = ngrok.connect(8080)
-#     print("URL pública:", public_url)
-#     app.run(port=8080, debug=True)
-
 
 if __name__ == "__main__":
-    # Cria túnel HTTP (e não HTTPS) para evitar o erro de handshake TLS
-    # public_url = ngrok.connect(80, "http")
-    # print(f" URL pública: {public_url}")
-
-    # Inicia o servidor Flask
     app.run(host="0.0.0.0", port=80, debug=True)

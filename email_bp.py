@@ -1,17 +1,19 @@
 from flask import Blueprint, current_app
-from flask_mail import Mail, Message
-from datetime import datetime
-from flask import current_app
-mail = Mail()
-
+import os
+import requests
 
 email_bp = Blueprint("email_bp", __name__)
-
-
 
 def enviar_notificacao_atestado(nome_usuario, destinatario_email, nome_arquivo):
     with current_app.app_context():
         try:
+            # 1. Puxa a chave do cofre do Render
+            chave_api = os.environ.get("CHAVE_RESEND")
+            
+            if not chave_api:
+                print(" ERRO: Variável CHAVE_RESEND não encontrada no Render.")
+                return False
+
             html_content = f"""
             <!DOCTYPE html>
             <html lang="pt-BR">
@@ -107,22 +109,31 @@ def enviar_notificacao_atestado(nome_usuario, destinatario_email, nome_arquivo):
             </html>
             """
 
-            msg = Message(
-                subject=f"NOVO ATESTADO RECEBIDO: {nome_usuario}",
-                recipients=[destinatario_email],
-                html=html_content
-            )
-            mail.send(msg)
-            return True
+            # 2. Configura a comunicação com a API da Resend
+            url = "https://api.resend.com/emails"
+            headers = {
+                "Authorization": f"Bearer {chave_api}",
+                "Content-Type": "application/json"
+            }
+
+            # 3. Monta o pacote de dados do e-mail
+            payload = {
+                "from": "Seal Health <onboarding@resend.dev>", # Exigência da Resend para contas grátis
+                "to": [destinatario_email], 
+                "subject": f"NOVO ATESTADO RECEBIDO: {nome_usuario}",
+                "html": html_content
+            }
+
+            # 4. Dispara o e-mail pela porta 443
+            resposta = requests.post(url, json=payload, headers=headers)
+
+            if resposta.status_code in [200, 201]:
+                print(" E-mail de notificação enviado com sucesso via Resend!")
+                return True
+            else:
+                print(f" ERRO NA API RESEND: {resposta.status_code} - {resposta.text}")
+                return False
 
         except Exception as e:
-            print(f"ERRO CRÍTICO AO ENVIAR E-MAIL DE NOTIFICAÇÃO: {e}")
-            return False
-
-            mail.send(msg)
-            print("E-mail de notificação enviado com sucesso!")
-            return True
-
-        except Exception as e:
-            print(f"ERRO AO ENVIAR E-MAIL DE NOTIFICAÇÃO: {e}")
+            print(f" ERRO CRÍTICO AO ENVIAR E-MAIL DE NOTIFICAÇÃO: {e}")
             return False
