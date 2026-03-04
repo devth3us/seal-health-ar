@@ -17,7 +17,7 @@ import requests
 
 # Importa os Blueprints
 from recuperar_senha import recuperar  
-from email_bp import email_bp, enviar_notificacao_atestado # Removido o import do 'mail'
+from email_bp import email_bp, enviar_notificacao_atestado 
 
 app = Flask(__name__)
 app.secret_key = "seal_health"
