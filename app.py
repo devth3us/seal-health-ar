@@ -397,7 +397,7 @@ def api_buscar_usuario():
                 
                 for user in usuarios:
                     cursor.execute("""
-                        select descricao, DATE_FORMAT(data_envio, '%d/%m/%Y %H:%i') as data_envio
+                        select descricao, DATE_FORMAT(data_envio, '%%d/%%m/%%Y %%H:%%i') as data_envio
                         from atestado
                         where cpf = %s
                     """, (user["cpf"],))
