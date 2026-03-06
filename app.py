@@ -2,7 +2,8 @@
 # Sealhealth.email@gmail.com
 # pip install Flask
 # pip install pymysql
-# pip install requests (Necessário para a Resend)
+# pip install requests (Necessário para a Brevo/Resend)
+# pip install python-dotenv
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import os
@@ -13,18 +14,19 @@ import json
 import string
 import random
 import requests
+from dotenv import load_dotenv
 
+# Carrega as variáveis do arquivo .env (tanto local quanto no Render via Secret Files)
+load_dotenv()
 
 # Importa os Blueprints
 from recuperar_senha import recuperar  
-from email_bp import email_bp, enviar_notificacao_atestado # Removido o import do 'mail'
+from email_bp import email_bp, enviar_notificacao_atestado 
 
 app = Flask(__name__)
 app.secret_key = "seal_health"
 
-# ==========================================
-# 1. PROTEÇÃO DA PASTA DE UPLOADS NO RENDER
-# ==========================================
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -33,9 +35,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "pdf"}
 
-# ==========================================
-# 2. CONFIGURAÇÃO DO BANCO DE DADOS
-# ==========================================
+
 db_config = {
     'host': '108.179.193.125',
     'user': 'marcos12_adm',
@@ -45,15 +45,11 @@ db_config = {
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-# ==========================================
-# 3. REGISTRO DE ROTAS (BLUEPRINTS)
-# ==========================================
+
 app.register_blueprint(email_bp)
 app.register_blueprint(recuperar)
 
-# ==========================================
-# FUNÇÕES GERAIS
-# ==========================================
+
 @app.errorhandler(413)
 def request_entity_too_large(error):
     flash("O arquivo enviado é muito grande. O limite é 3 MB.")
@@ -74,9 +70,7 @@ def verificar_usuario(email, senha):
         print("Erro ao verificar usuário:", e)
     return None
 
-# ==========================================
-# ROTAS DO SISTEMA
-# ==========================================
+
 @app.route("/")
 def escolha():
     return render_template("escolha.html")
@@ -164,7 +158,7 @@ def dashboard_admin():
             cursor.execute("select count(*) as total from atestado")
             kpis['total_atestados'] = cursor.fetchone().get('total', 0)
             
-            cursor.execute("select count(*) as pendentes from atestado where id= 0") # Mantido seu código original, mas talvez seja status='0'
+            cursor.execute("select count(*) as pendentes from atestado where id= 0") 
             kpis['atestados_pendentes'] = cursor.fetchone().get('pendentes', 0)
             
     except pymysql.Error as e:
@@ -291,21 +285,17 @@ def enviar_convite():
     email = request.form.get("email")
     tipo = request.form.get("tipo")
 
-    # 1. Gera uma senha provisória aleatória de 6 letras/números
     senha_temp = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     senha_hash = generate_password_hash(senha_temp)
 
     try:
         with pymysql.connect(**db_config) as conn:
             with conn.cursor() as cursor:
-                # Verifica se o CPF já existe para não dar erro no banco
                 cursor.execute("select cpf from pessoa where cpf=%s", (cpf,))
                 if cursor.fetchone():
                     flash("Este CPF já está cadastrado no sistema.", "error")
                     return redirect(url_for("admin_cadastro_usuarios"))
 
-                # Insere os dados básicos e deixa o resto em branco/padrão para o usuário preencher depois
-                # A data padrão '2000-01-01' evita erro de SQL se o campo for obrigatório
                 cursor.execute("""
                     insert into pessoa 
                     (cpf, nome, email, senha, dt_nasc, cep, num_ende, complemento_ende, tell, tipo)
@@ -313,9 +303,7 @@ def enviar_convite():
                 """, (cpf, nome, email, senha_hash, tipo))
                 conn.commit()
 
-        # 2. Prepara o e-mail de convite lindão
-        chave_api = os.environ.get("CHAVE_RESEND")
-        
+        # HTML do E-mail
         html_email = f"""
         <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 30px;">
             <div style="background: white; max-width: 500px; margin: auto; padding: 30px; border-radius: 10px; border-top: 5px solid #007b8f; text-align: center;">
@@ -332,22 +320,34 @@ def enviar_convite():
         </div>
         """
 
-        # 3. Dispara via Resend
-        url = "https://api.resend.com/emails"
+        # INTEGRAÇÃO BREVO (Foge do bloqueio SMTP do Render)
+        chave_api = os.environ.get("BREVO_API_KEY")
+        
+        url_brevo = "https://api.brevo.com/v3/smtp/email"
+        
         headers = {
-            "Authorization": f"Bearer {chave_api}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "from": "Seal Health <onboarding@resend.dev>",
-            "to": [email], 
-            "subject": "Você foi convidado! - Seal Health",
-            "html": html_email
+            "accept": "application/json",
+            "api-key": chave_api,
+            "content-type": "application/json"
         }
         
-        requests.post(url, json=payload, headers=headers)
+        payload = {
+            "sender": {"name": "Seal Health", "email": "sealhealth.email@gmail.com"},
+            "to": [{"email": email, "name": nome}],
+            "subject": "Você foi convidado! - Seal Health",
+            "htmlContent": html_email
+        }
+        
+        # Envia a requisição HTTPS para a Brevo
+        resposta = requests.post(url_brevo, json=payload, headers=headers)
 
-        flash("Convite enviado com sucesso! O usuário já pode acessar o sistema.", "success")
+        # Checa se a Brevo aceitou o envio
+        if resposta.status_code in [200, 201, 202]:
+            flash("Convite enviado com sucesso! O usuário já pode acessar o sistema.", "success")
+        else:
+            print(f"❌ ERRO BREVO: {resposta.status_code} - {resposta.text}")
+            flash("Usuário cadastrado no banco, mas a Brevo bloqueou o e-mail. Verifique a chave da API no Render.", "error")
+
         return redirect(url_for("admin_cadastro_usuarios"))
 
     except Exception as e:
@@ -382,9 +382,7 @@ def base():
 def busca():
     return render_template("busca.html")
 
-# ==========================================
-# 4. ROTA DE UPLOAD E NOTIFICAÇÃO
-# ==========================================
+
 @app.route("/upload", methods=["POST"])
 def upload_file():
     if "usuario" not in session:
@@ -395,7 +393,6 @@ def upload_file():
     descricao = request.form.get("descricao")
     file = request.files.get("file")
 
-    # OBRIGATÓRIO SER ESTE E-MAIL PARA A API RESEND GRÁTIS FUNCIONAR:
     EMAIL_DO_RESPONSAVEL = "sealhealth.email@gmail.com"
 
     try:
@@ -415,7 +412,6 @@ def upload_file():
                     data_hora = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                     filename = f"{primeiro_nome}_{data_hora}.{ext}"
 
-                    # Usa a pasta blindada que criamos no topo do código
                     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     file.save(filepath)
 
@@ -425,7 +421,6 @@ def upload_file():
                     """, (descricao, cpf, filepath))
                     conn.commit()
 
-                    # Envio de notificação pela nova API (não trava o site)
                     enviar_notificacao_atestado(
                         nome_usuario=pessoa_info["nome"],
                         destinatario_email=EMAIL_DO_RESPONSAVEL,
@@ -450,21 +445,20 @@ def logout():
 
 @app.route("/api/buscar_usuario")
 def api_buscar_usuario():
-    # 1. Proteção de Segurança: Só o Admin pode fazer a busca
     if "admin" not in session:
         return jsonify({"error": "Acesso não autorizado"}), 401
 
     termo = request.args.get("email")  
     
-    # 2. Verifica se o termo está vazio
+
     if not termo:
         return jsonify({"error": "Termo de busca vazio"}), 400
 
     try:
         with pymysql.connect(**db_config) as conn:
-            with conn.cursor() as cursor: # Usamos o cursor Dict padrão já configurado no db_config
+            with conn.cursor() as cursor: 
                 
-                # Busca o usuário pelo Nome, CPF ou E-mail
+               
                 cursor.execute("""
                     select cpf, nome, email, dt_nasc, cep, num_ende, complemento_ende, tell, tipo
                     from pessoa

@@ -1,0 +1,7 @@
+# Esconde o meu arquivo de variaveis de ambiente do Github
+.env
+
+# e tambem ignora as minhas pastas de cache do Python
+*.pyc
+
+
