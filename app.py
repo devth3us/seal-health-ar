@@ -37,10 +37,10 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "pdf"}
 
 
 db_config = {
-    'host': '108.179.193.125',
-    'user': 'marcos12_adm',
-    'password': 'Seal_Health_TCC2025',
-    'database': 'marcos12_seal_health',
+    'host': os.environ.get('DB_HOST'),
+    'user': os.environ.get('DB_USER'),
+    'password': os.environ.get('DB_PASSWORD'),
+    'database': os.environ.get('DB_NAME'),
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
@@ -303,7 +303,7 @@ def enviar_convite():
                 """, (cpf, nome, email, senha_hash, tipo))
                 conn.commit()
 
-        # HTML do E-mail
+        
         html_email = f"""
         <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 30px;">
             <div style="background: white; max-width: 500px; margin: auto; padding: 30px; border-radius: 10px; border-top: 5px solid #007b8f; text-align: center;">
@@ -320,7 +320,6 @@ def enviar_convite():
         </div>
         """
 
-        # INTEGRAÇÃO BREVO (Foge do bloqueio SMTP do Render)
         chave_api = os.environ.get("BREVO_API_KEY")
         
         url_brevo = "https://api.brevo.com/v3/smtp/email"
@@ -345,7 +344,7 @@ def enviar_convite():
         if resposta.status_code in [200, 201, 202]:
             flash("Convite enviado com sucesso! O usuário já pode acessar o sistema.", "success")
         else:
-            print(f"❌ ERRO BREVO: {resposta.status_code} - {resposta.text}")
+            print(f" ERRO BREVO: {resposta.status_code} - {resposta.text}")
             flash("Usuário cadastrado no banco, mas a Brevo bloqueou o e-mail. Verifique a chave da API no Render.", "error")
 
         return redirect(url_for("admin_cadastro_usuarios"))

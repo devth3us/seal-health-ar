@@ -24,13 +24,15 @@ EMAIL_PASS = "Math8080@"
 # Função para conectar ao banco 
 def get_db_config():
     return {
-    'host': '108.179.193.125',
-    'user': 'marcos12_adm',
-    'password': 'Seal_Health_TCC2025',
-    'database': 'marcos12_seal_health',
+    'host': os.environ.get('DB_HOST'),
+    'user': os.environ.get('DB_USER'),
+    'password': os.environ.get('DB_PASSWORD'),
+    'database': os.environ.get('DB_NAME'),
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
     }
+
+
 
 # Rota: página de recuperar senha
 @recuperar.route("/esqueci_senha")
