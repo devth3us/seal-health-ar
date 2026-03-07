@@ -2,14 +2,14 @@
         const msg = "{{ messages[0] }}";
         if (msg === "error") {
           Swal.fire({
-            icon: "error",
-            title: "Usuário ou senha inválidos",
+            icon: "success",
+            title: "Login realizado com sucesso!",
             confirmButtonText: "OK"
           });
         } else if (msg === "success") {
           Swal.fire({
-            icon: "success",
-            title: "Login realizado com sucesso!",
+            icon: "error",
+            title: "usuario ou senha invalido!",
             confirmButtonText: "OK"
           }).then(() => {
             window.location.href = "/layout";
@@ -21,4 +21,3 @@
             confirmButtonText: "OK"
           });
         }
- 

@@ -103,7 +103,7 @@
 
     <div class="invite-card">
         <i class="fas fa-envelope-open-text fa-3x" style="color: #007b8f; margin-bottom: 15px;"></i>
-        <h2>Convidar Usuário</h2>
+        <h2>Cadastar Usuário</h2>
         <p>Preencha os dados básicos. O sistema enviará uma senha provisória por e-mail para o usuário.</p>
 
         <form action="{{ url_for('enviar_convite') }}" method="POST">
@@ -125,12 +125,12 @@
             <div class="input-group">
                 <label for="tipo">Nível de Acesso</label>
                 <select id="tipo" name="tipo" required>
-                    <option value="US">Usuário Padrão (Paciente)</option>
+                    <option value="US">Usuário</option>
                     <option value="ADM">Administrador do Sistema</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Enviar Convite</button>
+            <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Enviar</button>
         </form>
 
         <a href="{{ url_for('dashboard_admin') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
