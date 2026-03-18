@@ -91,10 +91,10 @@ def auth_usuario():
     user = verificar_usuario(email, senha)
     if user and user["tipo"] == "US":
         session["usuario"] = user
-        flash("success")
+        flash("Login efetuado com sucesso!", "success") 
         return redirect(url_for("layout"))
     else:
-        flash("error")
+        flash("E-mail ou senha incorretos.", "error") 
         return redirect(url_for("login_usuario"))
 
 @app.route("/login_admin")
@@ -109,10 +109,10 @@ def auth_admin():
     admin = verificar_usuario(email, senha)
     if admin and admin["tipo"] == "ADM":
         session["admin"] = admin
-        flash("success")
+        flash("Login administrativo realizado!", "success")
         return redirect(url_for("dashboard_admin"))
     else:
-        flash("error")
+        flash("Credenciais de administrador inválidas.", "error")
         return redirect(url_for("login_admin"))
 
 @app.route("/layout")

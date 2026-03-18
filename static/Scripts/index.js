@@ -1,12 +1,12 @@
 
         const msg = "{{ messages[0] }}";
-        if (msg === "error") {
+        if (msg === "sucess") {
           Swal.fire({
             icon: "success",
             title: "Login realizado com sucesso!",
             confirmButtonText: "OK"
           });
-        } else if (msg === "success") {
+        } else if (msg === "error") {
           Swal.fire({
             icon: "error",
             title: "usuario ou senha invalido!",

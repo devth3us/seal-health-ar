@@ -7,6 +7,15 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+  <div style="display: none;">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash-message" data-category="{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  </div>
   <div class="login-container">
     <h2>Login</h2>
     <form action="{{ url_for('auth_usuario') }}" method="POST">
@@ -26,6 +35,15 @@
     
     <a href="{{ url_for('recuperar.esqueci_senha') }}" class="esqueci_senha">Esqueci minha senha</a>
     </div>
+    <script src="{{ url_for('static', filename='Scripts/layout.js') }}"></script>
+<script>
+  // Isso garante que os alertas funcionem na index também
+  document.addEventListener("DOMContentLoaded", function() {
+      if (typeof verificarAlertasDoServidor === "function") {
+          verificarAlertasDoServidor();
+      }
+  });
+</script>
     <script src="{{ url_for('static', filename='Scripts/index.js') }}"></script>
 </body>
 </html>
