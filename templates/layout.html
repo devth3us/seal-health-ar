@@ -140,7 +140,9 @@
     </div>
   </div>
 
-  <button id="cameraButton">📤</button>
+  <button id="cameraButton" style="padding: 0; border: none; background: transparent; cursor: pointer; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s;">
+    <img src="{{ url_for('static', filename='icons/icone_upload.png') }}" alt="Enviar Atestado" style="width: 60px; height: 60px; object-fit: cover; display: block;">
+  </button>
   
   <footer>
     <p>Seal Health © 2025</p>

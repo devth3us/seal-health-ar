@@ -83,19 +83,37 @@ document.addEventListener("DOMContentLoaded", function() {
     const modal = document.getElementById('uploadModal');
     const openBtn = document.getElementById('cameraButton');
     const closeBtn = document.getElementById('closeBtn');
+    const openSidebarBtn = document.getElementById('openModalSidebar'); // Puxa o botão do menu lateral
 
     if(openBtn) openBtn.onclick = () => modal.classList.add("show");
     if(closeBtn) closeBtn.onclick = () => modal.classList.remove("show");
+    
+    // Faz o botão do menu lateral abrir o modal
+    if(openSidebarBtn) {
+        openSidebarBtn.onclick = (e) => {
+            e.preventDefault();
+            modal.classList.add("show");
+            if(sidebar.classList.contains('open')) toggleSidebar(); // Fecha a sidebar no mobile
+        };
+    }
 
     // Lógica de arquivo
     const fileInput = document.getElementById('file');
     const fileNameDisplay = document.getElementById('file-name-display');
+    const uploadArea = document.getElementById('upload-area'); // Puxa a área pontilhada
+
+    // Fazfuncionar o botão de upload
+    if(uploadArea && fileInput) {
+        uploadArea.onclick = () => fileInput.click();
+        uploadArea.style.cursor = 'pointer'; // Adiciona o cursor de mãozinha
+    }
+
     if(fileInput) {
         fileInput.onchange = function() {
             if(this.files.length > 0) fileNameDisplay.innerText = this.files[0].name;
         };
     }
 
-    // INICIALIZAÇÃO: Mostra apenas a HOME
+    
     showSection('homeSection');
 });
