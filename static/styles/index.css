@@ -13,6 +13,13 @@ body {
   height: 100vh;
 }
 
+
+.swal2-shown {
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
+
 /* Caixa de login centralizada */
 .login-container {
   background: white;

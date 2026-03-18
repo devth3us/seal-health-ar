@@ -26,7 +26,8 @@ function verificarAlertasDoServidor() {
             icon: categoria === 'success' ? 'success' : 'error',
             title: categoria === 'success' ? 'Sucesso!' : 'Erro',
             text: msg.innerText,
-            confirmButtonColor: '#007b8f'
+            confirmButtonColor: '#007b8f',
+            scrollbarPadding: false 
         });
     });
 }
