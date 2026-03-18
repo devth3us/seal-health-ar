@@ -459,8 +459,7 @@ def api_buscar_usuario():
                 
                
                 cursor.execute("""
-                    select cpf, nome, email, dt_nasc, cep, num_ende, complemento_ende, tell, tipo
-                    from pessoa
+                    select * from pessoa_sem_id
                     where email LIKE %s or nome LIKE %s or cpf LIKE %s
                 """, (f"%{termo}%", f"%{termo}%", f"%{termo}%"))
                 usuarios = cursor.fetchall()
@@ -472,7 +471,7 @@ def api_buscar_usuario():
                 for user in usuarios:
                     cursor.execute("""
                         select descricao, DATE_FORMAT(data_envio, '%%d/%%m/%%Y %%H:%%i') as data_envio
-                        from atestado
+                     -----   from atestado
                         where cpf = %s
                     """, (user["cpf"],))
                     user["atestados"] = cursor.fetchall()
