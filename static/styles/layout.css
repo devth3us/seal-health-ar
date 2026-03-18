@@ -9,7 +9,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-image: url('../images/fundo.jpeg');
+    background-image: url('../images/fundo-novo.jpeg');
     background-size: cover;
     background-attachment: fixed;
     background-color: #f4f4f4;
