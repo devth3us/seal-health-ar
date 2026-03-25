@@ -237,6 +237,41 @@ def api_update_atestado():
         print("Erro ao atualizar status do atestado:", e)
         return jsonify({"success": False, "message": "Erro interno do servidor"}), 500
 
+
+
+@app.route("/api/update_atestado", methods=["POST"])
+def api_update_atestado():
+    if "admin" not in session:
+        return jsonify({"success": False, "message": "Acesso não autorizado."}), 401
+
+   
+    data = request.get_json()
+    atestado_id = data.get('id')
+    novo_status = data.get('status') # 1 para Aceito, 2 para Rejeitado
+
+    if not atestado_id or novo_status is None:
+        return jsonify({"success": False, "message": "Dados inválidos."}), 400
+
+    try:
+        with pymysql.connect(**db_config) as conn:
+            with conn.cursor() as cursor:
+                # Atualiza o status no banco de dados
+                cursor.execute(
+                    "UPDATE atestado SET status = %s WHERE id = %s", 
+                    (novo_status, atestado_id)
+                )
+                conn.commit()
+        
+        #talvez eu faça isso disparar um e-mail para o usuário notificando a mudança
+        
+        return jsonify({"success": True, "message": f"Atestado atualizado com sucesso!"})
+
+    except Exception as e:
+        print("Erro ao atualizar status do atestado:", e)
+        return jsonify({"success": False, "message": "Erro interno do servidor."}), 500
+
+
+
 @app.route("/cadastro")
 def cadastro():
     return render_template("cadastro.html")
@@ -482,6 +517,9 @@ def api_buscar_usuario():
     except Exception as e:
         print("Erro ao buscar usuário:", e)
         return jsonify({"error": "Erro interno no servidor"}), 500
+
+
+
 
 
 if __name__ == "__main__":

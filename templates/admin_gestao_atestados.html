@@ -3,78 +3,164 @@
     .table-container {
         background-color: white;
         padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin: 0 auto;
+        max-width: 1200px;
     }
 
     /* Estilo do DataTables Customizado */
+    #tabelaAtestados {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
     #tabelaAtestados thead th {
         background-color: #007b8f;
         color: white;
         text-transform: uppercase;
         font-size: 13px;
         padding: 12px;
+        text-align: left;
         border-bottom: none;
     }
 
     #tabelaAtestados tbody td {
         font-size: 14px;
-        padding: 10px;
+        padding: 12px;
         vertical-align: middle;
         border-bottom: 1px solid #eee;
     }
 
     #tabelaAtestados tbody tr:hover {
-        background-color: #e0f7fa;
+        background-color: #f9f9f9;
     }
 
+    /* Badges de Status */
     .status-badge {
         padding: 6px 12px;
         border-radius: 20px;
         font-weight: bold;
-        color: rgb(0, 0, 0);
         font-size: 11px;
         text-transform: uppercase;
         display: inline-block;
-        min-width: 80px;
+        min-width: 90px;
         text-align: center;
     }
-    .status-0 { background-color: #ffc107; color: #444; }
-    .status-1 { background-color: #28a745; }
-    .status-2 { background-color: #dc3545; }
+    .status-0 { background-color: #fff3cd; color: #856404; } /* Em Análise */
+    .status-1 { background-color: #d4edda; color: #155724; } /* Aceito */
+    .status-2 { background-color: #f8d7da; color: #721c24; } /* Rejeitado */
+
+    /* Botões de Ação na Tabela */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
 
     .btn-action {
-        padding: 6px 12px;
-        border: none;
+        padding: 8px 12px;
         border-radius: 6px;
+        border: none;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: bold;
-        margin-right: 5px;
-        transition: transform 0.1s;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
-    .btn-approve { background-color: #28a745; color: white; }
-    .btn-reject { background-color: #dc3545; color: white; }
-    .btn-action:hover { transform: scale(1.05); opacity: 0.9; }
+    .btn-action:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+    .btn-preview { background-color: #e0f7fa; color: #007b8f; }
+    .btn-preview:hover { background-color: #b2ebf2; }
     
-    /* Ajustes visuais do DataTables */
-    .dataTables_wrapper .dataTables_filter input { border: 1px solid #ccc; border-radius: 4px; padding: 4px; }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: #007b8f !important; color: white !important; border: 1px solid #007b8f !important;
+    .btn-approve { background-color: #28a745; color: white; }
+    .btn-approve:hover { background-color: #218838; }
+    
+    .btn-reject { background-color: #dc3545; color: white; }
+    .btn-reject:hover { background-color: #c82333; }
+
+    /* --- MODAL DE PREVIEW --- */
+    .preview-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .preview-modal.show {
+        display: flex;
+        opacity: 1;
+    }
+
+    .preview-content {
+        background: white;
+        width: 90%;
+        max-width: 800px;
+        height: 85vh;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .preview-header {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .preview-header h2 { margin: 0; font-size: 18px; color: #333; }
+
+    .close-preview {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #666;
+        line-height: 1;
+    }
+    .close-preview:hover { color: #d9534f; }
+
+    .preview-body {
+        flex: 1;
+        padding: 0;
+        background: #e9ecef;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .preview-body iframe, .preview-body img {
+        width: 100%;
+        height: 100%;
+        border: none;
+        object-fit: contain;
     }
 </style>
 
 <div class="table-container">
-    <h3 style="color: #007b8f; margin-bottom: 20px;">Gerenciamento de Atestados</h3>
+    <h2 style="color: #007b8f; margin-top: 0; margin-bottom: 25px;"><i class="fas fa-file-medical"></i> Gerenciamento de Atestados</h2>
 
-    <table id="tabelaAtestados" class="display" style="width:100%">
+    <table id="tabelaAtestados" class="display">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Usuário</th>
-                <th>Descrição</th>
                 <th>Data Envio</th>
-                <th>Arquivo</th>
+                <th>Colaborador</th>
+                <th>Descrição</th>
                 <th>Status</th>
                 <th>Ações</th>
             </tr>
@@ -82,30 +168,35 @@
         <tbody>
             {% for atestado in atestados %}
             <tr id="row-{{ atestado.id }}">
-                <td>{{ atestado.id }}</td>
+                <td>{{ atestado.data_envio_formatada }}</td>
                 <td>
                     <strong>{{ atestado.nome }}</strong><br>
                     <span style="font-size: 12px; color: #666;">{{ atestado.email }}</span>
                 </td>
                 <td>{{ atestado.descricao }}</td>
-                <td>{{ atestado.data_envio_formatada }}</td>
-                <td>
-                    <a href="{{ url_for('static', filename=atestado.caminho) }}" target="_blank" style="color: #007b8f; font-weight: bold; text-decoration: none;">
-                        <i class="fas fa-file-pdf"></i> Ver Arquivo
-                    </a>
-                </td>
+                
                 <td>
                     <span id="status-{{ atestado.id }}" class="status-badge status-{{ atestado.status }}">
-                        {{ 'PENDENTE' if atestado.status == 0 else ('APROVADO' if atestado.status == 1 else 'REJEITADO') }}
+                        {% if atestado.status == 0 %} EM ANÁLISE
+                        {% elif atestado.status == 1 %} ACEITO
+                        {% elif atestado.status == 2 %} REJEITADO
+                        {% endif %}
                     </span>
                 </td>
+                
                 <td>
-                    <div id="actions-{{ atestado.id }}">
+                    <div class="action-buttons" id="actions-{{ atestado.id }}">
+                        <button onclick="abrirPreview(`{{ url_for('static', filename=atestado.caminho) }}`, `{{ atestado.descricao }}`, `{{ atestado.nome }}`)" class="btn-action btn-preview" title="Ver Arquivo">
+                            <i class="fas fa-eye"></i> Visualizar
+                        </button>
+
                         {% if atestado.status == 0 %}
-                            <button onclick="updateAtestado([[ atestado.id ]], 1)" class="btn-action btn-approve" title="Aprovar"><i class="fas fa-check"></i></button>
-                            <button onclick="updateAtestado([[ atestado.id ]], 2)" class="btn-action btn-reject" title="Rejeitar"><i class="fas fa-times"></i></button>
-                        {% else %}
-                            <span style="color: #aaa;">—</span>
+                            <button onclick="atualizarStatus('{{ atestado.id }}', 1)" class="btn-action btn-approve" title="Aprovar">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button onclick="atualizarStatus('{{ atestado.id }}', 2)" class="btn-action btn-reject" title="Rejeitar">
+                                <i class="fas fa-times"></i>
+                            </button>
                         {% endif %}
                     </div>
                 </td>
@@ -114,3 +205,114 @@
         </tbody>
     </table>
 </div>
+
+<div id="previewModal" class="preview-modal">
+    <div class="preview-content">
+        <div class="preview-header">
+            <div>
+                <h2 id="previewDesc">Preview do Atestado</h2>
+                <span id="previewUser" style="font-size: 13px; color: #666;"></span>
+            </div>
+            <button class="close-preview" onclick="fecharPreview()">&times;</button>
+        </div>
+        <div class="preview-body" id="previewBody">
+            </div>
+    </div>
+</div>
+
+<script>
+   
+    $(document).ready(function() {
+        if ($.fn.DataTable) {
+            $('#tabelaAtestados').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/pt-BR.json"
+                },
+                "order": [[ 0, "desc" ]] 
+            });
+        }
+    });
+
+    // --- LÓGICA DO PREVIEW ---
+    const modal = document.getElementById('previewModal');
+    const previewBody = document.getElementById('previewBody');
+    const previewDesc = document.getElementById('previewDesc');
+    const previewUser = document.getElementById('previewUser');
+
+    function abrirPreview(urlArquivo, descricao, nomeUsuario) {
+        previewDesc.innerText = descricao;
+        previewUser.innerText = `Enviado por: ${nomeUsuario}`;
+        previewBody.innerHTML = '';
+        
+        const extensao = urlArquivo.split('.').pop().toLowerCase();
+        
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(extensao)) {
+            const img = document.createElement('img');
+            img.src = urlArquivo;
+            previewBody.appendChild(img);
+        } else if (extensao === 'pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = urlArquivo;
+            previewBody.appendChild(iframe);
+        } else {
+            previewBody.innerHTML = `<div style="padding: 20px; text-align:center;">Formato não suportado. <a href="${urlArquivo}" target="_blank">Baixar Arquivo</a></div>`;
+        }
+        
+        modal.classList.add('show');
+    }
+
+    function fecharPreview() {
+        modal.classList.remove('show');
+        setTimeout(() => { previewBody.innerHTML = ''; }, 300);
+    }
+
+    // Fecha ao clicar fora
+    window.onclick = function(event) {
+        if (event.target == modal) fecharPreview();
+    }
+
+    // --- LÓGICA DE ATUALIZAÇÃO (Python API) ---
+    function atualizarStatus(atestadoId, novoStatus) {
+        const acao = novoStatus === 1 ? 'aprovar' : 'rejeitar';
+        const corConfirm = novoStatus === 1 ? '#28a745' : '#dc3545';
+        
+        Swal.fire({
+            title: `Deseja ${acao} este atestado?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: corConfirm,
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: `Sim, ${acao}!`,
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                
+                fetch('/api/update_atestado', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: atestadoId, status: novoStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Pronto!',
+                            text: 'Status atualizado com sucesso.',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload(); // Atualiza a página para ver a mudança
+                        });
+                    } else {
+                        Swal.fire('Erro!', data.message, 'error');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    Swal.fire('Falha de Comunicação', 'O servidor não respondeu.', 'error');
+                });
+            }
+        });
+    }
+</script>
