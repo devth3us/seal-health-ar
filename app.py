@@ -212,30 +212,30 @@ def admin_cadastro_usuarios():
         return redirect(url_for("login_admin"))
     return render_template("admin_cadastro_usuarios.html", is_admin_context=True)
 
-@app.route("/api/update_atestado", methods=["POST"])
-def api_update_atestado():
-    if "admin" not in session:
-        return jsonify({"success": False, "message": "Não autorizado"}), 401
+# @app.route("/api/update_atestado", methods=["POST"])
+# def api_update_atestado():
+#     if "admin" not in session:
+#         return jsonify({"success": False, "message": "Não autorizado"}), 401
 
-    data = request.get_json()
-    atestado_id = data.get('id')
-    novo_status = data.get('status') 
+#     data = request.get_json()
+#     atestado_id = data.get('id')
+#     novo_status = data.get('status') 
 
-    if not atestado_id or novo_status is None:
-        return jsonify({"success": False, "message": "Dados inválidos"}), 400
+#     if not atestado_id or novo_status is None:
+#         return jsonify({"success": False, "message": "Dados inválidos"}), 400
 
-    try:
-        with pymysql.connect(**db_config) as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(
-                    "update atestado set status = %s where id = %s", 
-                    (novo_status, atestado_id)
-                )
-                conn.commit()
-        return jsonify({"success": True, "message": "Status atualizado com sucesso"})
-    except Exception as e:
-        print("Erro ao atualizar status do atestado:", e)
-        return jsonify({"success": False, "message": "Erro interno do servidor"}), 500
+#     try:
+#         with pymysql.connect(**db_config) as conn:
+#             with conn.cursor() as cursor:
+#                 cursor.execute(
+#                     "update atestado set status = %s where id = %s", 
+#                     (novo_status, atestado_id)
+#                 )
+#                 conn.commit()
+#         return jsonify({"success": True, "message": "Status atualizado com sucesso"})
+#     except Exception as e:
+#         print("Erro ao atualizar status do atestado:", e)
+#         return jsonify({"success": False, "message": "Erro interno do servidor"}), 500
 
 
 
