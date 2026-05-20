@@ -1,125 +1,145 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convidar Usuário - Seal Health</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .invite-card {
-            background: white;
-            width: 100%;
-            max-width: 450px;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            text-align: center;
-            border-top: 5px solid #007b8f;
-        }
-        .invite-card h2 {
-            color: #007b8f;
-            margin-bottom: 10px;
-        }
-        .invite-card p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-        .input-group {
-            text-align: left;
-            margin-bottom: 15px;
-        }
-        .input-group label {
-            display: block;
-            font-weight: bold;
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        .input-group input:focus, .input-group select:focus {
-            border-color: #007b8f;
-        }
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background-color: #007b8f;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.3s;
-        }
-        .btn-submit:hover {
-            background-color: #005f73;
-        }
-        .btn-back {
-            display: inline-block;
-            margin-top: 20px;
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .btn-back:hover {
-            color: #007b8f;
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
+<style>
+    /* ==========================================================================
+       CSS AJUSTADO - REMOVIDO STYLES DE 'BODY' PARA NÃO QUEBRAR O PAINEL
+       ========================================================================== */
+    
+    /* Container isolado para centralizar o card sem afetar o resto do sistema */
+    .cadastro-page-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 40px 20px;
+        box-sizing: border-box;
+    }
 
-    <div style="display: none;">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="flash-message" data-category="{{ category }}">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-    </div>
+    .invite-card {
+        background: white;
+        width: 100%;
+        max-width: 450px;
+        padding: 40px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        text-align: center;
+        border-top: 5px solid #007b8f;
+        box-sizing: border-box;
+    }
 
+    .invite-card h2 {
+        color: #007b8f;
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 24px;
+    }
+
+    .invite-card p {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 30px;
+    }
+
+    .input-group {
+        text-align: left;
+        margin-bottom: 18px;
+    }
+
+    .input-group label {
+        display: block;
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 6px;
+    }
+
+    .input-group input, .input-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.3s;
+        background-color: #fff;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+        border-color: #007b8f;
+        box-shadow: 0 0 0 3px rgba(0, 123, 143, 0.1);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background-color: #007b8f;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background 0.3s, transform 0.1s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        background-color: #005f73;
+    }
+
+    .btn-submit:active {
+        transform: scale(0.99);
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-top: 20px;
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .btn-back:hover {
+        color: #007b8f;
+        text-decoration: underline;
+    }
+</style>
+
+<div style="display: none;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message" data-category="{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</div>
+
+<div class="cadastro-page-container">
     <div class="invite-card">
         <i class="fas fa-envelope-open-text fa-3x" style="color: #007b8f; margin-bottom: 15px;"></i>
-        <h2>Cadastar Usuário</h2>
+        <h2>Cadastrar Usuário</h2>
         <p>Preencha os dados básicos. O sistema enviará uma senha provisória por e-mail para o usuário.</p>
 
         <form action="{{ url_for('enviar_convite') }}" method="POST">
             <div class="input-group">
-                <label for="cpf">CPF do Usuário (Apenas Números)</label>
-                <input type="text" id="cpf" name="cpf" maxlength="11" required placeholder="Ex: 12345678900">
+                <label for="cpf">CPF do Usuário</label>
+                <input type="text" id="cpf" name="cpf" maxlength="11" required placeholder="Apenas Números">
             </div>
             
             <div class="input-group">
                 <label for="nome">Nome Completo</label>
-                <input type="text" id="nome" name="nome" required placeholder="Nome do Paciente ou Admin">
+                <input type="text" id="nome" name="nome" required placeholder="Nome do Usuário ou Admin">
             </div>
 
             <div class="input-group">
                 <label for="email">E-mail de Contato</label>
-                <input type="email" id="email" name="email" required placeholder="E-mail que receberá o convite">
+                <input type="email" id="email" name="email" required placeholder="E-mail que receberá o acesso">
             </div>
 
             <div class="input-group">
@@ -135,21 +155,20 @@
 
         <a href="{{ url_for('dashboard_admin') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
     </div>
+</div>
 
-    <script>
-        // Lógica para mostrar o alerta na tela
-        document.addEventListener("DOMContentLoaded", function() {
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(msg => {
-                const categoria = msg.getAttribute('data-category');
-                Swal.fire({
-                    icon: categoria === 'success' ? 'success' : 'error',
-                    title: categoria === 'success' ? 'Sucesso!' : 'Atenção',
-                    text: msg.innerText,
-                    confirmButtonColor: '#007b8f'
-                });
+<script>
+    // Mantido o script original de captura de mensagens do Flask para o SweetAlert2
+    document.addEventListener("DOMContentLoaded", function() {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(msg => {
+            const categoria = msg.getAttribute('data-category');
+            Swal.fire({
+                icon: categoria === 'success' ? 'success' : 'error',
+                title: categoria === 'success' ? 'Sucesso!' : 'Atenção',
+                text: msg.innerText,
+                confirmButtonColor: '#007b8f'
             });
         });
-    </script>
-</body>
-</html>
+    });
+</script>

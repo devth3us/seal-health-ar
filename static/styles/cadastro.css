@@ -1,64 +1,157 @@
-/* Centralizar tela */
-body {
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
-}
 
-/* Caixa de login */
-.login-container {
-  display: block;
-  background: #fff;
-  padding: 25px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  width: 350px;
-  text-align: center;
-  z-index: 2;
-}
+    /* ==========================================================================
+       1. CONTAINER PRINCIPAL (ISOLAMENTO DO DASHBOARD)
+       ========================================================================== */
+    .cadastro-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: calc(100vh - 140px); /* Garante bom uso do espaço útil */
+    }
 
-.login-container h2 {
-  margin-bottom: 20px;
-  color: #007b8f;
-}
+    /* ==========================================================================
+       2. CARD DE CADASTRO
+       ========================================================================== */
+    .cadastro-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+        width: 100%;
+        max-width: 500px; /* Impede que os campos fiquem esticados */
+        box-sizing: border-box;
+        border-top: 6px solid #007b8f; /* Linha identidade do Seal Health */
+    }
 
-.login-container input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
+    /* Elementos de texto do Cabeçalho */
+    .cadastro-card .icon-header {
+        font-size: 48px;
+        color: #007b8f;
+        margin-bottom: 12px;
+        text-align: center;
+    }
 
-.login-container button {
-  width: 100%;
-  padding: 12px;
-  background: #007b8f;
-  color: white;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+    .cadastro-card h2 {
+        margin: 0 0 8px 0;
+        color: #007b8f;
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        letter-spacing: -0.5px;
+    }
 
-.login-container button:hover {
-  background: #005f6e;
-}
+    .cadastro-card .subtitle {
+        color: #6c757d;
+        font-size: 13.5px;
+        line-height: 1.5;
+        margin-bottom: 28px;
+        text-align: center;
+    }
 
-.login-container p {
-  margin-top: 15px;
-}
+    /* ==========================================================================
+       3. FORMULÁRIO E CAMPOS DE ENTRADA
+       ========================================================================== */
+    .form-group {
+        margin-bottom: 18px;
+        text-align: left; /* Alinha labels perfeitamente à esquerda */
+    }
 
-.login-container a {
-  color: #007b8f;
-  text-decoration: none;
-  font-weight: bold;
-}
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #343a40;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
 
+    .form-group input, 
+    .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 15px;
+        color: #495057;
+        background-color: #ffffff;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
 
+    /* Estados de Foco e Placeholder */
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #007b8f;
+        box-shadow: 0 0 0 3px rgba(0, 123, 143, 0.15);
+    }
 
+    .form-group input::placeholder {
+        color: #adb5bd;
+        font-size: 14px;
+    }
+
+    /* Customização do Select (Seta Nativa Ajustada) */
+    .form-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 12px 12px;
+        padding-right: 40px;
+    }
+
+    /* ==========================================================================
+       4. BOTÃO DE AÇÃO PRINCIPAL
+       ========================================================================== */
+    .btn-enviar {
+        width: 100%;
+        padding: 14px;
+        background: #007b8f;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+        margin-top: 28px;
+    }
+
+    .btn-enviar:hover {
+        background-color: #005f73;
+        box-shadow: 0 4px 12px rgba(0, 95, 115, 0.15);
+    }
+
+    .btn-enviar:active {
+        transform: scale(0.98); /* Feedback tátil de clique */
+    }
+
+    /* ==========================================================================
+       5. LINKS DE VOLTAR
+       ========================================================================== */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+        width: 100%;
+        margin-top: 22px;
+        color: #007b8f;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #005f73;
+        text-decoration: underline;
+    }
