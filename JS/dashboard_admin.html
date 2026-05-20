@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard_admin.css') }}" />
-    <script src="{{url_for('static', filename='Scripts/dashboard_admin_new.js')}}" defer></script>
+    <script src="dashboard_admin.js"></script>
 </head>
 
 <body>
@@ -280,7 +280,7 @@
 
     <!-- ======================= LUX FAB ======================= -->
     <button id="lux-fab" class="lux-fab" type="button" aria-label="Abrir assistente Lux" aria-haspopup="dialog"
-        aria-controls="lux-modal" onclick="openModal()">
+        aria-controls="lux-modal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round" aria-hidden="true">
             <path
@@ -407,7 +407,7 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    <script defer>
+    <script src="script.js" defer>
 
         const API_UPDATE_URL = '{{ url_for("api_update_atestado") }}';
 
