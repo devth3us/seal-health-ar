@@ -141,7 +141,7 @@ svg {
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   min-width: 0;
 }
 .brand__logo {
@@ -357,6 +357,8 @@ svg {
   flex: 1;
   padding: 16px;
   overflow-x: hidden;
+
+  height: 300px;
 }
 
 .card {

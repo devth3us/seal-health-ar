@@ -42,18 +42,10 @@
                         </svg>
                     </figure>
                     <div class="brand__text">
-                        <strong>Olá, {{ user.nome.split()[0] }}! (ADM)</strong>
+                        <strong>Olá, {{ user.nome.split()[0] }}!</strong>
                         <span></span>
                     </div>
                 </section>
-
-                <button class="icon-btn sidebar__close" id="sidebar-close" aria-label="Fechar menu" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M18 6 6 18" />
-                        <path d="m6 6 12 12" />
-                    </svg>
-                </button>
 
             </header>
 
@@ -144,34 +136,8 @@
             <!-- Header -->
 
             <header class="header">
-                <button class="icon-btn header__menu" id="menuToggle" aria-label="Abrir menu" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <line x1="4" x2="20" y1="12" y2="12" />
-                        <line x1="4" x2="20" y1="6" y2="6" />
-                        <line x1="4" x2="20" y1="18" y2="18" />
-                    </svg>
-                </button>
                 <h1 class="header__title">Painel Administrativo</h1>
 
-                <nav class="header__actions">
-                    <button class="icon-btn" aria-label="Notificações" type="button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                        </svg>
-                        <span class="badge-dot" aria-hidden="true"></span>
-                    </button>
-                    <button class="icon-btn" aria-label="Conta do administrador" type="button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <circle cx="12" cy="10" r="3" />
-                            <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" />
-                        </svg>
-                    </button>
-                </nav>
             </header>
 
             <!-- Content -->
@@ -455,7 +421,7 @@
                 }
             }
 
-            document.getElementById('loadDashboard').onclick = () => { dashboardDefault.style.display = 'block'; dynamicContent.innerHTML = ''; };
+            document.getElementById('loadDashboard').onclick = () => { loadCa.style.display = 'block'; dynamicContent.innerHTML = ''; };
             document.getElementById('loadAtestados').onclick = () => loadPage("{{ url_for('admin_gestao_atestados') }}", true);
             document.getElementById('loadCadastro').onclick = () => loadPage("{{ url_for('admin_cadastro_usuarios') }}");
             document.getElementById('loadBusca').onclick = () => loadPage("{{ url_for('admin_busca') }}");
