@@ -204,7 +204,7 @@
   if (action === "config") {
     if (!dynamicContent) return;
     dynamicContent.innerHTML =
-      "<h2>Configuracoes</h2><p>Opcoes administrativas em construcao.</p>";
+      "<h2>Informações do sistema</h2><p>Versão: 1.0 (TCC)</p><p>Operacional</p>";
   }
 }
 
