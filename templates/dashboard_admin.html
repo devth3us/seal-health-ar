@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
-    /* MODAL DE PREVIEW CORRIGIDO (Z-INDEX BAIXADO) */
+    /* Estilos do Modal de Preview */
     .preview-modal { 
         display: none; 
         position: fixed; 
@@ -19,7 +19,7 @@
         width: 100%; 
         height: 100%; 
         background: rgba(0,0,0,0.8); 
-        z-index: 900; /* Baixado para o SweetAlert (1060+) ficar na frente */
+        z-index: 900; /* Controlado para o SweetAlert ficar na frente */
         justify-content: center; 
         align-items: center; 
         opacity: 0; 
@@ -30,6 +30,7 @@
     .preview-header { padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
     .preview-header h2 { margin: 0; font-size: 18px; color: #333; }
     .close-preview { background: none; border: none; font-size: 28px; cursor: pointer; color: #666; line-height: 1; }
+    .close-preview:hover { color: #d9534f; }
     .preview-body { flex: 1; padding: 0; background: #e9ecef; display: flex; justify-content: center; align-items: center; overflow: auto; }
     .preview-body iframe, .preview-body img { width: 100%; height: 100%; border: none; object-fit: contain; }
     .preview-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #ddd; display: flex; justify-content: flex-end; gap: 10px; }
@@ -37,7 +38,9 @@
     .btn-modal { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
     .btn-modal-approve { background: #28a745; color: white; }
     .btn-modal-reject { background: #dc3545; color: white; }
-    
+    .btn-modal:hover { opacity: 0.9; transform: scale(1.02); }
+
+    /* Estilos das badges de status na tabela */
     .status-badge { padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
     .status-0 { background: #fff3cd; color: #856404; }
     .status-1 { background: #d4edda; color: #155724; }
@@ -48,21 +51,23 @@
 
   <header>
     <div class="header-left">
-      <i class="fas fa-bars menu-toggle" id="menuToggle"></i>
+      <i class="fas fa-bars menu-toggle" id="menuToggle" aria-label="Abrir Menu"></i>
       <h1>Painel Administrativo</h1>
     </div>
+    <i class="fas fa-user-shield profile-icon" aria-label="Informações do Admin"></i>
   </header>
 
   <nav id="sidebar">
     <div class="profile-summary">
         <i class="fas fa-user-shield fa-2x"></i>
-        <span>Olá, {{ user.nome.split()[0] }}!</span>
+        <span>Olá, {{ user.nome.split()[0] }}! (ADM)</span>
     </div>
     <ul class="nav-links">
         <li><a href="#" id="loadDashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="#" id="loadAtestados"><i class="fas fa-file-alt"></i> Gerenciar Atestados</a></li>
         <li><a href="#" id="loadCadastro"><i class="fas fa-user-plus"></i> Cadastro de Pessoas</a></li>
         <li><a href="#" id="loadBusca"><i class="fas fa-users-cog"></i> Gestão de Usuários</a></li>
+        <li><a href="#" id="loadInfo"><i class="fas fa-info-circle"></i> Info. Sistema</a></li>
         <li><a href="{{ url_for('logout') }}" style="color: #ffcccc;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
     </ul>
   </nav>
@@ -73,17 +78,30 @@
     <div id="dashboard-default-content">
         <h2>Visão Geral</h2>
         <div class="kpi-cards">
-            <div class="card kpi-card total"><h3>Total</h3><p>{{ kpis.total_atestados }}</p></div>
-            <div class="card kpi-card pending"><h3>Pendentes</h3><p>{{ kpis.atestados_pendentes }}</p></div>
+            <div class="card kpi-card total">
+                <h3>Total de Atestados</h3>
+                <p>{{ kpis.total_atestados }}</p>
+            </div>
+            <div class="card kpi-card pending">
+                <h3>Atestados Pendentes</h3>
+                <p>{{ kpis.atestados_pendentes }}</p>
+            </div>
+        </div>
+        <div class="alert-box pending-alert">
+            <p><strong>ALERTA:</strong> Atestados enviados precisam de atenção. Clique em <strong>Gerenciar Atestados</strong> no menu lateral.</p>
         </div>
     </div>
+    
     <div id="dynamic-content"></div>
   </main>
 
   <div id="previewModal" class="preview-modal">
     <div class="preview-content">
         <div class="preview-header">
-            <div><h2 id="previewDesc">Analisar Atestado</h2><span id="previewUser"></span></div>
+            <div>
+                <h2 id="previewDesc">Analisar Atestado</h2>
+                <span id="previewUser" style="font-size: 13px; color: #666;"></span>
+            </div>
             <button class="close-preview" onclick="fecharPreview()">&times;</button>
         </div>
         <div class="preview-body" id="previewBody"></div>
@@ -91,10 +109,89 @@
     </div>
   </div>
 
+  <footer>
+    <p class="notranslate" translate="no">Seal Health © 2025 - Admin</p>
+  </footer>
+
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
+    // --- FUNÇÃO DE BUSCA ISOLADA E GLOBAL ---
+    window.realizarBusca = function() {
+        const termoInput = document.getElementById('termoBusca');
+        const resultadosDiv = document.getElementById('resultados');
+        const loading = document.getElementById('loading');
+
+        if (!termoInput) return;
+        const termo = termoInput.value.trim();
+
+        if (!termo) {
+            Swal.fire("Atenção", "Digite algo para pesquisar.", "warning");
+            return;
+        }
+
+        if (resultadosDiv) resultadosDiv.innerHTML = '';
+        if (loading) loading.style.display = 'block';
+
+        fetch(`/api/buscar_usuario?email=${encodeURIComponent(termo)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (loading) loading.style.display = 'none';
+
+                if (data.error || !data.usuarios || data.usuarios.length === 0) {
+                    if (resultadosDiv) {
+                        resultadosDiv.innerHTML = `<p style="text-align:center; color:#666; padding:20px; background:white; border-radius:8px;">
+                            ${data.error || 'Nenhum usuário encontrado.'}
+                        </p>`;
+                    }
+                    return;
+                }
+
+                data.usuarios.forEach(user => {
+                    let atestadosHtml = '';
+                    if (user.atestados && user.atestados.length > 0) {
+                        user.atestados.forEach(att => {
+                            atestadosHtml += `
+                                <div class="mini-item">
+                                    <span><strong>${att.descricao}</strong></span>
+                                    <span style="color:#666;">${att.data_envio}</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        atestadosHtml = '<p style="font-size:12px; color:#999; margin:0;">Nenhum atestado enviado.</p>';
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'user-card';
+                    card.innerHTML = `
+                        <div class="user-header">
+                            <h3>${user.nome}</h3>
+                            <span style="font-weight:bold; color: #007b8f;">${user.tipo}</span>
+                        </div>
+                        <div class="user-info">
+                            <p><strong>CPF:</strong> ${user.cpf}</p>
+                            <p><strong>E-mail:</strong> ${user.email}</p>
+                            <p><strong>Telefone:</strong> ${user.tell}</p>
+                            <p><strong>Endereço:</strong> ${user.cep}, ${user.num_ende}</p>
+                        </div>
+                        <div class="atestados-mini-list">
+                            <h4>📄 Histórico de Atestados</h4>
+                            ${atestadosHtml}
+                        </div>
+                    `;
+                    if (resultadosDiv) resultadosDiv.appendChild(card);
+                });
+            })
+            .catch(err => {
+                if (loading) loading.style.display = 'none';
+                console.error(err);
+                Swal.fire("Erro", "Erro ao processar os dados de busca.", "error");
+            });
+    };
+
+    // --- LÓGICA DE ROTEAMENTO INTERNO E COMPONENTES ---
     const API_UPDATE_URL = '{{ url_for("api_update_atestado") }}';
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -104,32 +201,75 @@
         const dynamicContent = document.getElementById('dynamic-content');
         const dashboardDefault = document.getElementById('dashboard-default-content');
 
-        function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
         if(menuToggle) menuToggle.addEventListener('click', toggleSidebar);
         if(overlay) overlay.addEventListener('click', toggleSidebar);
 
         window.loadPage = function(url, isAtestados = false) {
             dashboardDefault.style.display = 'none';
-            dynamicContent.innerHTML = '<p style="text-align:center">Carregando...</p>';
-            fetch(url).then(res => res.text()).then(html => {
-                dynamicContent.innerHTML = html;
-                if (isAtestados) initDataTables();
-            });
+            dynamicContent.innerHTML = '<div style="text-align:center; padding:50px;"><i class="fas fa-spinner fa-spin fa-3x" style="color:#007b8f;"></i><p>Carregando...</p></div>';
+
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    dynamicContent.innerHTML = html;
+                    if (sidebar.classList.contains('open')) toggleSidebar();
+                    if (isAtestados) initDataTables();
+                })
+                .catch(err => {
+                    dynamicContent.innerHTML = "<p style='color:red; text-align:center;'>Erro ao carregar a página.</p>";
+                    console.error(err);
+                });
         };
 
         function initDataTables() {
             if ($('#tabelaAtestados').length) {
-                $('#tabelaAtestados').DataTable({ "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }, "order": [[ 0, "desc" ]] });
+                if ($.fn.DataTable.isDataTable('#tabelaAtestados')) {
+                    $('#tabelaAtestados').DataTable().destroy();
+                }
+                $('#tabelaAtestados').DataTable({
+                    responsive: true,
+                    "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" },
+                    "order": [[ 0, "desc" ]] 
+                });
             }
         }
 
-        document.getElementById('loadDashboard').onclick = () => { dashboardDefault.style.display = 'block'; dynamicContent.innerHTML = ''; };
-        document.getElementById('loadAtestados').onclick = () => loadPage("{{ url_for('admin_gestao_atestados') }}", true);
-        document.getElementById('loadCadastro').onclick = () => loadPage("{{ url_for('admin_cadastro_usuarios') }}");
-        document.getElementById('loadBusca').onclick = () => loadPage("{{ url_for('admin_busca') }}");
+        // Eventos de clique nas abas
+        document.getElementById('loadDashboard').onclick = (e) => { e.preventDefault(); dashboardDefault.style.display = 'block'; dynamicContent.innerHTML = ''; if (sidebar.classList.contains('open')) toggleSidebar(); };
+        document.getElementById('loadAtestados').onclick = (e) => { e.preventDefault(); loadPage("{{ url_for('admin_gestao_atestados') }}", true); };
+        document.getElementById('loadCadastro').onclick = (e) => { e.preventDefault(); loadPage("{{ url_for('admin_cadastro_usuarios') }}"); };
+        document.getElementById('loadBusca').onclick = (e) => { e.preventDefault(); loadPage("{{ url_for('admin_busca') }}"); };
+        document.getElementById('loadInfo').onclick = (e) => {
+            e.preventDefault();
+            dynamicContent.innerHTML = `
+                <div class="table-container" style="padding:20px; background:white; border-radius:8px;">
+                    <h2>Informações do Sistema</h2>
+                    <p><strong>Versão:</strong> 1.0 (TCC 2025)</p>
+                    <p><strong>Status:</strong> Operacional</p>
+                </div>`;
+            dashboardDefault.style.display = 'none';
+            if (sidebar.classList.contains('open')) toggleSidebar();
+        };
     });
 
-    // --- FUNÇÕES DE ANÁLISE ---
+    // --- ESCUTAS AUTOMÁTICAS (DELEGAÇÃO DE EVENTOS PARA A BUSCA) ---
+    document.addEventListener('click', function(e) {
+        if (e.target && (e.target.id === 'btnBuscar' || e.target.textContent.trim() === 'Buscar')) {
+            window.realizarBusca();
+        }
+    });
+
+    document.addEventListener('keypress', function (e) {
+        if (e.target && e.target.id === 'termoBusca' && e.key === 'Enter') {
+            window.realizarBusca();
+        }
+    });
+
+    // --- MODAL DE ANÁLISE DE ATESTADOS ---
     window.abrirModalAnalisar = function(urlArquivo, descricao, nomeUsuario, atestadoId, statusAtual) {
         const modal = document.getElementById('previewModal');
         const previewBody = document.getElementById('previewBody');
@@ -154,16 +294,15 @@
                 <button class="btn-modal btn-modal-approve" onclick="confirmarAprovacao(${atestadoId})"><i class="fas fa-check"></i> Aprovar</button>
             `;
         } else {
-            previewFooter.innerHTML = `<span style="color:#666;">Já avaliado.</span>`;
+            previewFooter.innerHTML = `<span style="color:#666; font-style:italic;">Atestado já avaliado.</span>`;
         }
         modal.classList.add('show');
     };
 
     window.fecharPreview = function() { document.getElementById('previewModal').classList.remove('show'); };
 
-    // AQUI ESTÁ A CHAVE: FECHAR O MODAL ANTES DE ABRIR O ALERTA
     window.solicitarMotivoRejeicao = function(id) {
-        fecharPreview(); // Esconde o modal do atestado
+        fecharPreview();
         Swal.fire({
             title: 'Motivo da Rejeição',
             input: 'textarea',
@@ -176,16 +315,12 @@
                 return motivo;
             }
         }).then((result) => {
-            if (result.isConfirmed) {
-                enviarDecisao(id, 2, result.value);
-            } else {
-                // Se cancelar, opcionalmente pode reabrir o modal, mas melhor deixar fechado para o fluxo ser limpo
-            }
+            if (result.isConfirmed) enviarDecisao(id, 2, result.value);
         });
     };
 
     window.confirmarAprovacao = function(id) {
-        fecharPreview(); // Esconde o modal do atestado
+        fecharPreview();
         Swal.fire({
             title: 'Confirmar Aprovação?',
             icon: 'question',
@@ -193,9 +328,7 @@
             confirmButtonText: 'Sim, aprovar',
             confirmButtonColor: '#28a745'
         }).then((result) => {
-            if (result.isConfirmed) {
-                enviarDecisao(id, 1, '');
-            }
+            if (result.isConfirmed) enviarDecisao(id, 1, '');
         });
     };
 
@@ -209,7 +342,6 @@
         .then(data => {
             if (data.success) {
                 Swal.fire('Sucesso!', data.message, 'success').then(() => {
-                    // Recarrega a aba de atestados para atualizar a tabela
                     document.getElementById('loadAtestados').click();
                 });
             } else {
@@ -217,6 +349,11 @@
             }
         });
     }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('previewModal');
+        if (event.target == modal) fecharPreview();
+    };
 </script>
 </body>
 </html>

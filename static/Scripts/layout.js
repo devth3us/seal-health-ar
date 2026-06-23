@@ -117,3 +117,48 @@ document.addEventListener("DOMContentLoaded", function() {
     
     showSection('homeSection');
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+        const chatBtn = document.getElementById("toggleLuxBtn");
+        const chatBox = document.getElementById("luxChatBox");
+        const closeBtn = document.getElementById("closeLuxBtn");
+        const sendBtn = document.getElementById("luxSendBtn");
+        const inputField = document.getElementById("luxInput");
+        const chatBody = document.getElementById("luxChatBody");
+
+        chatBtn.onclick = () => chatBox.classList.toggle("show");
+        closeBtn.onclick = () => chatBox.classList.remove("show");
+
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `lux-msg ${sender}`;
+            msgDiv.innerText = text;
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function enviarMensagemParaLux() {
+            const mensagem = inputField.value.trim();
+            if (!mensagem) return;
+
+            appendMessage(mensagem, "user");
+            inputField.value = "";
+
+            fetch("/api/chat_lux", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mensagem: mensagem })
+            })
+            .then(res => res.json())
+            .then(data => {
+                appendMessage(data.resposta, "bot");
+            })
+            .catch(err => {
+                console.error(err);
+                appendMessage("Desculpe, tive um problema para me conectar ao servidor.", "bot");
+            });
+        }
+
+        sendBtn.onclick = enviarMensagemParaLux;
+        inputField.onkeypress = (e) => { if (e.key === "Enter") enviarMensagemParaLux(); };
+    });
