@@ -127,7 +127,7 @@ def layout():
         with pymysql.connect(**db_config) as conn:
             with conn.cursor() as cursor:
                 cursor.execute("""
-                    select descricao, id, caminho, status,
+                    select descricao, id, caminho, 
                     DATE_FORMAT(data_envio, '%%d/%%m/%%Y') as data_bonita 
                     from atestado 
                     where cpf = %s 
@@ -192,7 +192,7 @@ def admin_gestao_atestados():
             with conn.cursor() as cursor:
                 cursor.execute("""
                     select
-                        a.id, a.descricao, a.cpf, a.caminho, a.status, 
+                        a.id, a.descricao, a.cpf, a.caminho, a.id, 
                         DATE_FORMAT(a.data_envio, '%Y/%m/%d %H:%i') as data_envio_formatada,
                         p.nome, p.email
                     from atestado a
@@ -212,15 +212,42 @@ def admin_cadastro_usuarios():
         return redirect(url_for("login_admin"))
     return render_template("admin_cadastro_usuarios.html", is_admin_context=True)
 
+# @app.route("/api/update_atestado", methods=["POST"])
+# def api_update_atestado():
+#     if "admin" not in session:
+#         return jsonify({"success": False, "message": "Não autorizado"}), 401
+
+#     data = request.get_json()
+#     atestado_id = data.get('id')
+#     novo_status = data.get('status') 
+
+#     if not atestado_id or novo_status is None:
+#         return jsonify({"success": False, "message": "Dados inválidos"}), 400
+
+#     try:
+#         with pymysql.connect(**db_config) as conn:
+#             with conn.cursor() as cursor:
+#                 cursor.execute(
+#                     "update atestado set status = %s where id = %s", 
+#                     (novo_status, atestado_id)
+#                 )
+#                 conn.commit()
+#         return jsonify({"success": True, "message": "Status atualizado com sucesso"})
+#     except Exception as e:
+#         print("Erro ao atualizar status do atestado:", e)
+#         return jsonify({"success": False, "message": "Erro interno do servidor"}), 500
+
+
+
 @app.route("/api/update_atestado", methods=["POST"])
 def api_update_atestado():
     if "admin" not in session:
         return jsonify({"success": False, "message": "Acesso não autorizado."}), 401
+
    
     data = request.get_json()
     atestado_id = data.get('id')
-    novo_status = data.get('status')
-    motivo = data.get('motivo', '') # Captura o motivo (se houver)
+    novo_status = data.get('status') # 1 para Aceito, 2 para Rejeitado
 
     if not atestado_id or novo_status is None:
         return jsonify({"success": False, "message": "Dados inválidos."}), 400
@@ -228,17 +255,23 @@ def api_update_atestado():
     try:
         with pymysql.connect(**db_config) as conn:
             with conn.cursor() as cursor:
+                # Atualiza o status no banco de dados
                 cursor.execute(
-                    "UPDATE atestado SET status = %s, motivo_rejeicao = %s WHERE id = %s", 
-                    (novo_status, motivo, atestado_id)
+                    "UPDATE atestado SET status = %s WHERE id = %s", 
+                    (novo_status, atestado_id)
                 )
                 conn.commit()
         
-        return jsonify({"success": True, "message": "Atestado processado com sucesso!"})
+        #talvez eu faça isso disparar um e-mail para o usuário notificando a mudança
+        
+        return jsonify({"success": True, "message": f"Atestado atualizado com sucesso!"})
 
     except Exception as e:
-        print("Erro ao processar atestado:", e)
+        print("Erro ao atualizar status do atestado:", e)
         return jsonify({"success": False, "message": "Erro interno do servidor."}), 500
+
+
+
 @app.route("/cadastro")
 def cadastro():
     return render_template("cadastro.html")
@@ -275,6 +308,7 @@ def register():
         flash("register_error")
         return redirect(url_for("cadastro"))
 
+
 @app.route("/admin/enviar_convite", methods=["POST"])
 def enviar_convite():
     if "admin" not in session:
@@ -304,6 +338,7 @@ def enviar_convite():
                 """, (cpf, nome, email, senha_hash, tipo))
                 conn.commit()
 
+        
         html_email = f"""
         <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 30px;">
             <div style="background: white; max-width: 500px; margin: auto; padding: 30px; border-radius: 10px; border-top: 5px solid #007b8f; text-align: center;">
@@ -321,6 +356,7 @@ def enviar_convite():
         """
 
         chave_api = os.environ.get("BREVO_API_KEY")
+        
         url_brevo = "https://api.brevo.com/v3/smtp/email"
         
         headers = {
@@ -336,8 +372,10 @@ def enviar_convite():
             "htmlContent": html_email
         }
         
+        # Envia a requisição HTTPS para a Brevo
         resposta = requests.post(url_brevo, json=payload, headers=headers)
 
+        # Checa se a Brevo aceitou o envio
         if resposta.status_code in [200, 201, 202]:
             flash("Convite enviado com sucesso! O usuário já pode acessar o sistema.", "success")
         else:
@@ -350,6 +388,7 @@ def enviar_convite():
         print("Erro ao cadastrar convite:", e)
         flash("Erro interno ao processar o cadastro.", "error")
         return redirect(url_for("admin_cadastro_usuarios"))
+
 
 @app.route("/admin/usuarios")
 def admin_usuarios():
@@ -376,6 +415,7 @@ def base():
 @app.route("/busca")
 def busca():
     return render_template("busca.html")
+
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
@@ -409,12 +449,10 @@ def upload_file():
                     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     file.save(filepath)
 
-                    caminho_relativo = f"uploads/{filename}"
-
                     cursor.execute(""" 
                         insert into atestado (descricao, cpf, caminho, status) 
-                        values (%s, %s, %s, 0)
-                    """, (descricao, cpf, caminho_relativo))
+                        values (%s, %s, %s, '0')
+                    """, (descricao, cpf, filepath))
                     conn.commit()
 
                     enviar_notificacao_atestado(
@@ -445,6 +483,7 @@ def api_buscar_usuario():
         return jsonify({"error": "Acesso não autorizado"}), 401
 
     termo = request.args.get("email")  
+    
 
     if not termo:
         return jsonify({"error": "Termo de busca vazio"}), 400
@@ -452,28 +491,35 @@ def api_buscar_usuario():
     try:
         with pymysql.connect(**db_config) as conn:
             with conn.cursor() as cursor: 
+                
+               
                 cursor.execute("""
-                    select * from pessoa
+                    select * from pessoa_sem_id
                     where email LIKE %s or nome LIKE %s or cpf LIKE %s
                 """, (f"%{termo}%", f"%{termo}%", f"%{termo}%"))
                 usuarios = cursor.fetchall()
 
                 if not usuarios:
                     return jsonify({"error": "Nenhum usuário encontrado"})
+
                 
                 for user in usuarios:
                     cursor.execute("""
                         select descricao, DATE_FORMAT(data_envio, '%%d/%%m/%%Y %%H:%%i') as data_envio
-                        from atestado
+                     -----   from atestado
                         where cpf = %s
                     """, (user["cpf"],))
                     user["atestados"] = cursor.fetchall()
+
                 
                 return jsonify({"usuarios": usuarios})
 
     except Exception as e:
         print("Erro ao buscar usuário:", e)
         return jsonify({"error": "Erro interno no servidor"}), 500
+
+
+
 
 
 if __name__ == "__main__":
