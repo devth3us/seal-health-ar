@@ -475,38 +475,6 @@ def api_buscar_usuario():
         print("Erro ao buscar usuário:", e)
         return jsonify({"error": "Erro interno no servidor"}), 500
 
-@app.route("/api/chat_lux", methods=["POST"])
-def api_chat_lux():
-    if "usuario" not in session:
-        return jsonify({"resposta": "Por favor, faça login para conversar comigo."}), 401
-
-    data = request.get_json()
-    pergunta = data.get("mensagem", "").lower().strip()
-    
-    if not pergunta:
-        return jsonify({"resposta": "Olá! Como posso te ajudar hoje?"})
-
-    if any(keyword in pergunta for keyword in ["tempo", "prazo", "demora", "quanto tempo", "analisar"]):
-        resposta = "O prazo padrão para a equipe administrativa analisar e validar o seu atestado é de até 24 a 48 horas úteis. Você receberá a atualização diretamente no seu painel!"
-        
-    elif any(keyword in pergunta for keyword in ["status", "cor", "significa", "pendente", "aceito"]):
-        resposta = "O sistema utiliza a coluna 'status' do banco de dados para definir a situação do seu documento:\n\n🟡 Em Análise (Status 0)\n🟢 Aceito (Status 1)\n🔴 Rejeitado (Status 2)"
-        
-    elif any(keyword in pergunta for keyword in ["recusa", "rejeitado", "motivo", "recusou"]):
-        resposta = "Caso seu atestado seja recusado, o administrador registrará a justificativa na coluna 'motivo_rejeicao'. Você poderá ler o motivo direto no card do atestado."
-        
-    elif any(keyword in pergunta for keyword in ["enviar", "como mando", "upload", "mandei"]):
-        resposta = "Para enviar, clique em 'Enviar Atestado' no menu lateral, preencha o campo de descrição e anexe o arquivo (formatos aceitos: PDF, PNG, JPG, JPEG ou GIF)."
-        
-    elif any(keyword in pergunta for keyword in ["banco", "coluna", "tabela", "estrutura"]):
-        resposta = "A arquitetura do Seal Health armazena seus dados na tabela 'pessoa' (chave primária: CPF) e os arquivos na tabela 'atestado', mapeando as colunas 'id', 'descricao', 'caminho', 'status' e 'motivo_rejeicao'."
-        
-    else:
-        resposta = "Eu sou a Lux, assistente exclusiva do Seal Health. Só posso responder a perguntas institucionais ou técnicas sobre este sistema (como prazos, envios, status e banco de dados). Pode refazer sua dúvida?"
-
-    return jsonify({"resposta": resposta})
-
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

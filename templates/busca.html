@@ -114,7 +114,7 @@
     
     <div class="search-box">
         <input type="text" id="termoBusca" placeholder="Digite nome, CPF ou e-mail...">
-        <button class="btn-search" id="btnBuscar">Buscar</button>
+        <button class="btn-search" onclick="realizarBusca()">Buscar</button>
     </div>
 </div>
 
@@ -199,7 +199,7 @@
             });
     }
 
-    
+    // Permite apertar ENTER para buscar
     document.getElementById('termoBusca').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             realizarBusca();

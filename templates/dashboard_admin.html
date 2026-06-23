@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description"
@@ -18,6 +19,50 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard_admin.css') }}" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{url_for('static', filename='Scripts/dashboard_admin_new.js')}}" defer></script>
+=======
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title class="notranslate" translate="no">Admin - Seal Health</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard_admin.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    /* MODAL DE PREVIEW CORRIGIDO (Z-INDEX BAIXADO) */
+    .preview-modal { 
+        display: none; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0,0,0,0.8); 
+        z-index: 900; /* Baixado para o SweetAlert (1060+) ficar na frente */
+        justify-content: center; 
+        align-items: center; 
+        opacity: 0; 
+        transition: opacity 0.3s; 
+    }
+    .preview-modal.show { display: flex; opacity: 1; }
+    .preview-content { background: white; width: 95%; max-width: 900px; height: 90vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .preview-header { padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+    .preview-header h2 { margin: 0; font-size: 18px; color: #333; }
+    .close-preview { background: none; border: none; font-size: 28px; cursor: pointer; color: #666; line-height: 1; }
+    .preview-body { flex: 1; padding: 0; background: #e9ecef; display: flex; justify-content: center; align-items: center; overflow: auto; }
+    .preview-body iframe, .preview-body img { width: 100%; height: 100%; border: none; object-fit: contain; }
+    .preview-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #ddd; display: flex; justify-content: flex-end; gap: 10px; }
+    
+    .btn-modal { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-modal-approve { background: #28a745; color: white; }
+    .btn-modal-reject { background: #dc3545; color: white; }
+    
+    .status-badge { padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+    .status-0 { background: #fff3cd; color: #856404; }
+    .status-1 { background: #d4edda; color: #155724; }
+    .status-2 { background: #f8d7da; color: #721c24; }
+  </style>
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
 </head>
 
 
@@ -25,6 +70,7 @@
     <!-- Sidebar overlay (mobile) -->
     <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
 
+<<<<<<< HEAD
     <div class="app">
         <!-- ======================= SIDEBAR ======================= -->
         <aside id="sidebar" class="sidebar" aria-label="Menu de navegação">
@@ -46,9 +92,32 @@
                         <span></span>
                     </div>
                 </section>
+=======
+  <header>
+    <div class="header-left">
+      <i class="fas fa-bars menu-toggle" id="menuToggle"></i>
+      <h1>Painel Administrativo</h1>
+    </div>
+  </header>
+
+  <nav id="sidebar">
+    <div class="profile-summary">
+        <i class="fas fa-user-shield fa-2x"></i>
+        <span>Olá, {{ user.nome.split()[0] }}!</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#" id="loadDashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#" id="loadAtestados"><i class="fas fa-file-alt"></i> Gerenciar Atestados</a></li>
+        <li><a href="#" id="loadCadastro"><i class="fas fa-user-plus"></i> Cadastro de Pessoas</a></li>
+        <li><a href="#" id="loadBusca"><i class="fas fa-users-cog"></i> Gestão de Usuários</a></li>
+        <li><a href="{{ url_for('logout') }}" style="color: #ffcccc;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+    </ul>
+  </nav>
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
 
             </header>
 
+<<<<<<< HEAD
             <nav class="sidebar__nav" aria-label="Principal">
                 <p class="sidebar__label">Navegação</p>
                 <ul>
@@ -160,6 +229,35 @@
                     </header>
 
                     <section class="stats">
+=======
+  <main id="main-content">
+    <div id="dashboard-default-content">
+        <h2>Visão Geral</h2>
+        <div class="kpi-cards">
+            <div class="card kpi-card total"><h3>Total</h3><p>{{ kpis.total_atestados }}</p></div>
+            <div class="card kpi-card pending"><h3>Pendentes</h3><p>{{ kpis.atestados_pendentes }}</p></div>
+        </div>
+    </div>
+    <div id="dynamic-content"></div>
+  </main>
+
+  <div id="previewModal" class="preview-modal">
+    <div class="preview-content">
+        <div class="preview-header">
+            <div><h2 id="previewDesc">Analisar Atestado</h2><span id="previewUser"></span></div>
+            <button class="close-preview" onclick="fecharPreview()">&times;</button>
+        </div>
+        <div class="preview-body" id="previewBody"></div>
+        <div class="preview-footer" id="previewFooter"></div>
+    </div>
+  </div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+    const API_UPDATE_URL = '{{ url_for("api_update_atestado") }}';
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
 
                         <article class="stat stat--info">
                             <span class="stat__bar" aria-hidden="true"></span>
@@ -171,6 +269,7 @@
                                 </svg>
                             </figure>
 
+<<<<<<< HEAD
                             <section class="stat__body">
                                 <p class="stat__label">Total de Atestados</p>
                                 <p class="stat__value">{{ kpis.total_atestados }}</p>
@@ -426,14 +525,94 @@
                 if ($('#tabelaAtestados').length) {
                     $('#tabelaAtestados').DataTable({ "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }, "order": [[0, "desc"]] });
                 }
+=======
+        function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }
+        if(menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+        if(overlay) overlay.addEventListener('click', toggleSidebar);
+
+        window.loadPage = function(url, isAtestados = false) {
+            dashboardDefault.style.display = 'none';
+            dynamicContent.innerHTML = '<p style="text-align:center">Carregando...</p>';
+            fetch(url).then(res => res.text()).then(html => {
+                dynamicContent.innerHTML = html;
+                if (isAtestados) initDataTables();
+            });
+        };
+
+        function initDataTables() {
+            if ($('#tabelaAtestados').length) {
+                $('#tabelaAtestados').DataTable({ "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }, "order": [[ 0, "desc" ]] });
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
             }
 
+<<<<<<< HEAD
             document.getElementById('loadDashboard').onclick = () => { loadCa.style.display = 'block'; dynamicContent.innerHTML = ''; };
             document.getElementById('loadAtestados').onclick = () => loadPage("{{ url_for('admin_gestao_atestados') }}", true);
             document.getElementById('loadCadastro').onclick = () => loadPage("{{ url_for('admin_cadastro_usuarios') }}");
             document.getElementById('loadBusca').onclick = () => loadPage("{{ url_for('admin_busca') }}");
+=======
+        document.getElementById('loadDashboard').onclick = () => { dashboardDefault.style.display = 'block'; dynamicContent.innerHTML = ''; };
+        document.getElementById('loadAtestados').onclick = () => loadPage("{{ url_for('admin_gestao_atestados') }}", true);
+        document.getElementById('loadCadastro').onclick = () => loadPage("{{ url_for('admin_cadastro_usuarios') }}");
+        document.getElementById('loadBusca').onclick = () => loadPage("{{ url_for('admin_busca') }}");
+    });
+
+    // --- FUNÇÕES DE ANÁLISE ---
+    window.abrirModalAnalisar = function(urlArquivo, descricao, nomeUsuario, atestadoId, statusAtual) {
+        const modal = document.getElementById('previewModal');
+        const previewBody = document.getElementById('previewBody');
+        const previewFooter = document.getElementById('previewFooter');
+        
+        document.getElementById('previewDesc').innerText = descricao;
+        document.getElementById('previewUser').innerText = `Enviado por: ${nomeUsuario}`;
+        previewBody.innerHTML = '';
+
+        const extensao = urlArquivo.split('.').pop().toLowerCase();
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(extensao)) {
+            previewBody.innerHTML = `<img src="${urlArquivo}">`;
+        } else if (extensao === 'pdf') {
+            previewBody.innerHTML = `<iframe src="${urlArquivo}"></iframe>`;
+        } else {
+            previewBody.innerHTML = `<div style="padding:20px;">Preview indisponível. <a href="${urlArquivo}" target="_blank">Baixar</a></div>`;
+        }
+
+        if (parseInt(statusAtual) === 0) {
+            previewFooter.innerHTML = `
+                <button class="btn-modal btn-modal-reject" onclick="solicitarMotivoRejeicao(${atestadoId})"><i class="fas fa-times"></i> Rejeitar</button>
+                <button class="btn-modal btn-modal-approve" onclick="confirmarAprovacao(${atestadoId})"><i class="fas fa-check"></i> Aprovar</button>
+            `;
+        } else {
+            previewFooter.innerHTML = `<span style="color:#666;">Já avaliado.</span>`;
+        }
+        modal.classList.add('show');
+    };
+
+    window.fecharPreview = function() { document.getElementById('previewModal').classList.remove('show'); };
+
+    // AQUI ESTÁ A CHAVE: FECHAR O MODAL ANTES DE ABRIR O ALERTA
+    window.solicitarMotivoRejeicao = function(id) {
+        fecharPreview(); // Esconde o modal do atestado
+        Swal.fire({
+            title: 'Motivo da Rejeição',
+            input: 'textarea',
+            inputPlaceholder: 'Por que este atestado foi recusado?',
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar Rejeição',
+            confirmButtonColor: '#dc3545',
+            preConfirm: (motivo) => {
+                if (!motivo) Swal.showValidationMessage('O motivo é obrigatório!');
+                return motivo;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                enviarDecisao(id, 2, result.value);
+            } else {
+                // Se cancelar, opcionalmente pode reabrir o modal, mas melhor deixar fechado para o fluxo ser limpo
+            }
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
         });
 
+<<<<<<< HEAD
         // --- FUNÇÕES DE ANÁLISE ---
         window.abrirModalAnalisar = function (urlArquivo, descricao, nomeUsuario, atestadoId, statusAtual) {
             const modal = document.getElementById('previewModal');
@@ -449,9 +628,40 @@
                 previewBody.innerHTML = `<img src="${urlArquivo}">`;
             } else if (extensao === 'pdf') {
                 previewBody.innerHTML = `<iframe src="${urlArquivo}"></iframe>`;
+=======
+    window.confirmarAprovacao = function(id) {
+        fecharPreview(); // Esconde o modal do atestado
+        Swal.fire({
+            title: 'Confirmar Aprovação?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, aprovar',
+            confirmButtonColor: '#28a745'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                enviarDecisao(id, 1, '');
+            }
+        });
+    };
+
+    function enviarDecisao(id, status, motivo) {
+        fetch(API_UPDATE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, status: status, motivo: motivo })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire('Sucesso!', data.message, 'success').then(() => {
+                    // Recarrega a aba de atestados para atualizar a tabela
+                    document.getElementById('loadAtestados').click();
+                });
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
             } else {
                 previewBody.innerHTML = `<div style="padding:20px;">Preview indisponível. <a href="${urlArquivo}" target="_blank">Baixar</a></div>`;
             }
+<<<<<<< HEAD
 
             if (parseInt(statusAtual) === 0) {
                 previewFooter.innerHTML = `
@@ -461,6 +671,11 @@
         }
     </script>
 
+=======
+        });
+    }
+</script>
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
 </body>
 
 </html>

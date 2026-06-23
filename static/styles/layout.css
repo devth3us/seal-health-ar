@@ -402,6 +402,7 @@ footer {
     overflow-y: auto;
 }
 
+<<<<<<< HEAD
 .modal.show {
     display: flex; 
     justify-content: center;
@@ -684,6 +685,8 @@ footer {
     background: #005f73;
 }
 
+=======
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
 @keyframes scaleIn {
     from { transform: scale(0.8); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
@@ -745,6 +748,7 @@ footer {
         width: 100%;
         min-width: unset; 
     }
+<<<<<<< HEAD
     .lux-chat-box {
         width: calc(100% - 32px);
         right: 16px;
@@ -752,4 +756,6 @@ footer {
         bottom: 95px;
         height: 430px;
     }
+=======
+>>>>>>> parent of e1ceeb9 (atualizacao geral)
 }
