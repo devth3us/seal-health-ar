@@ -1,25 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-<<<<<<< HEAD
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="description"
-        content="Painel administrativo Seal Health para gestão de atestados médicos com a assistente de IA Lux." />
-    <meta name="theme-color" content="#2a8a90" />
-    <title class="notranslate" translate="no">Admin - Seal Health</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard_admin.css') }}" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{url_for('static', filename='Scripts/dashboard_admin_new.js')}}" defer></script>
-=======
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title class="notranslate" translate="no">Admin - Seal Health</title>
@@ -27,7 +8,6 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard_admin.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<<<<<<< HEAD
   
   <style>
     /* MODAL DE PREVIEW CORRIGIDO (Z-INDEX BAIXADO) */
@@ -63,678 +43,128 @@
     .status-1 { background: #d4edda; color: #155724; }
     .status-2 { background: #f8d7da; color: #721c24; }
   </style>
->>>>>>> parent of e1ceeb9 (atualizacao geral)
-=======
->>>>>>> parent of 1244241 (ajuste geral)
 </head>
-
-
 <body>
-    <!-- Sidebar overlay (mobile) -->
-    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
 
-<<<<<<< HEAD
-    <div class="app">
-        <!-- ======================= SIDEBAR ======================= -->
-        <aside id="sidebar" class="sidebar" aria-label="Menu de navegação">
-
-            <header class="sidebar__header">
-                <section class="brand">
-                    <figure class="brand__logo" aria-hidden="true">
-                        <!-- stethoscope icon -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
-                            <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
-                            <circle cx="20" cy="10" r="2" />
-                        </svg>
-                    </figure>
-                    <div class="brand__text">
-                        <strong>Olá, {{ user.nome.split()[0] }}!</strong>
-                        <span></span>
-                    </div>
-                </section>
-=======
   <header>
     <div class="header-left">
-      <i class="fas fa-bars menu-toggle" id="menuToggle" aria-label="Abrir Menu"></i>
+      <i class="fas fa-bars menu-toggle" id="menuToggle"></i>
       <h1>Painel Administrativo</h1>
     </div>
-    <i class="fas fa-user-shield profile-icon" aria-label="Informações do Admin"></i>
   </header>
 
   <nav id="sidebar">
     <div class="profile-summary">
         <i class="fas fa-user-shield fa-2x"></i>
-        <span>Olá, {{ user.nome.split()[0] }}! (ADM)</span>
+        <span>Olá, {{ user.nome.split()[0] }}!</span>
     </div>
     <ul class="nav-links">
         <li><a href="#" id="loadDashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
         <li><a href="#" id="loadAtestados"><i class="fas fa-file-alt"></i> Gerenciar Atestados</a></li>
         <li><a href="#" id="loadCadastro"><i class="fas fa-user-plus"></i> Cadastro de Pessoas</a></li>
         <li><a href="#" id="loadBusca"><i class="fas fa-users-cog"></i> Gestão de Usuários</a></li>
-        <li><a href="#" id="loadInfo"><i class="fas fa-info-circle"></i> Info. Sistema</a></li>
         <li><a href="{{ url_for('logout') }}" style="color: #ffcccc;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
     </ul>
   </nav>
->>>>>>> parent of e1ceeb9 (atualizacao geral)
 
-            </header>
+  <div id="sidebar-overlay"></div>
 
-<<<<<<< HEAD
-            <nav class="sidebar__nav" aria-label="Principal">
-                <p class="sidebar__label">Navegação</p>
-                <ul>
-                    <li>
-                        <a href="#" class="nav-item is-active" aria-current="page" id="loadDashboard">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <rect width="7" height="9" x="3" y="3" rx="1" />
-                                <rect width="7" height="5" x="14" y="3" rx="1" />
-                                <rect width="7" height="9" x="14" y="12" rx="1" />
-                                <rect width="7" height="5" x="3" y="16" rx="1" />
-                            </svg>
-                            <span>Visão Geral</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-item" id="loadAtestados">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                                <path d="M10 9H8" />
-                                <path d="M16 13H8" />
-                                <path d="M16 17H8" />
-                            </svg>
-                            <span>Gerenciar Atestados</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-item" id="loadCadastro">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                <circle cx="9" cy="7" r="4" />
-                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
-                            <span>Cadastro de usuários</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-item" id="loadBusca">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 3v18h18" />
-                                <path d="M7 16V9" />
-                                <path d="M12 16v-5" />
-                                <path d="M17 16v-3" />
-                            </svg>
-                            <span>Gestão de usuários</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-item" id="loadConfig">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path
-                                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                            <span>Info. Sistema</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <footer class="sidebar__footer">
-                <a href="{{ url_for('logout') }}">
-                    <button class="nav-item nav-item--button" type="button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <polyline points="16 17 21 12 16 7" />
-                            <line x1="21" x2="9" y1="12" y2="12" />
-                        </svg>
-                        <span>Sair</span>
-                    </button>
-            </footer>
-            </a>
-        </aside>
-
-        <!-- ======================= MAIN ======================= -->
-        <main class="main">
-
-            <!-- Header -->
-
-            <header class="header">
-                <button class="icon-btn header__menu" id="menuToggle" aria-label="Abrir menu" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <line x1="4" x2="20" y1="12" y2="12" />
-                        <line x1="4" x2="20" y1="6" y2="6" />
-                        <line x1="4" x2="20" y1="18" y2="18" />
-                    </svg>
-                </button>
-                <h1 class="header__title">Painel Administrativo</h1>
-            </header>
-
-            <!-- Content -->
-            <main class="content">
-                <section class="card overview" aria-labelledby="overview-title">
-
-                    <header class="overview__head">
-                        <div>
-                            <h2 id="overview-title">Visão Geral</h2>
-                            <p class="muted">Resumo dos atestados do sistema.</p>
-                        </div>
-                        <span class="muted muted--small">Atualizado agora</span>
-                    </header>
-
-                    <section class="stats">
-=======
   <main id="main-content">
     <div id="dashboard-default-content">
         <h2>Visão Geral</h2>
         <div class="kpi-cards">
-            <div class="card kpi-card total">
-                <!-- <i class="fas fa-paperclip"></i> -->
-                <h3>Total de Atestados</h3>
-                <p>{{ kpis.total_atestados }}</p>
-            </div>
-            <div class="card kpi-card pending">
-                <!-- <i class="fas fa-exclamation-triangle"></i> -->
-                <h3>Atestados Pendentes</h3>
-                <p>{{ kpis.atestados_pendentes }}</p>
-            </div>
-        </div>
-        <div class="alert-box pending-alert">
-            <!-- <i class="fas fa-bell"></i> -->
-            <p><strong>ALERTA:</strong> Atestados enviados precisam de atenção. Clique em <strong>Gerenciar Atestados</strong> no menu lateral.</p>
+            <div class="card kpi-card total"><h3>Total</h3><p>{{ kpis.total_atestados }}</p></div>
+            <div class="card kpi-card pending"><h3>Pendentes</h3><p>{{ kpis.atestados_pendentes }}</p></div>
         </div>
     </div>
-    
     <div id="dynamic-content"></div>
-
   </main>
 
-  <footer>
-    <p class="notranslate" translate="no">Seal Health © 2025 - Admin</p>
-  </footer>
+  <div id="previewModal" class="preview-modal">
+    <div class="preview-content">
+        <div class="preview-header">
+            <div><h2 id="previewDesc">Analisar Atestado</h2><span id="previewUser"></span></div>
+            <button class="close-preview" onclick="fecharPreview()">&times;</button>
+        </div>
+        <div class="preview-body" id="previewBody"></div>
+        <div class="preview-footer" id="previewFooter"></div>
+    </div>
+  </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
-    function realizarBusca() {
-        const termo = document.getElementById('termoBusca').value;
-        const resultadosDiv = document.getElementById('resultados');
-        const loading = document.getElementById('loading');
-
-        if (!termo) {
-            Swal.fire("Atenção", "Digite algo para pesquisar.", "warning");
-            return;
-        }
-
-        // Limpa resultados anteriores e mostra loading
-        resultadosDiv.innerHTML = '';
-        loading.style.display = 'block';
-
-        // Chama a API que criamos no app.py
-        fetch(`/api/buscar_usuario?email=${termo}`)
-            .then(response => response.json())
-            .then(data => {
-                loading.style.display = 'none';
-
-                if (data.error || !data.usuarios || data.usuarios.length === 0) {
-                    resultadosDiv.innerHTML = '<p style="text-align:center; color:#666;">Nenhum usuário encontrado.</p>';
-                    return;
-                }
-
-                // Para cada usuário encontrado, cria um Card HTML
-                data.usuarios.forEach(user => {
-                    let atestadosHtml = '';
-                    if (user.atestados && user.atestados.length > 0) {
-                        user.atestados.forEach(att => {
-                            atestadosHtml += `
-                                <div class="mini-item">
-                                    <span>${att.descricao}</span>
-                                    <span style="color:#666;">${att.data_envio}</span>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        atestadosHtml = '<p style="font-size:12px; color:#999;">Nenhum atestado enviado.</p>';
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = 'user-card';
-                    card.innerHTML = `
-                        <div class="user-header">
-                            <h3>${user.nome}</h3>
-                            <span style="font-weight:bold; color: #007b8f;">${user.tipo}</span>
-                        </div>
-                        <div class="user-info">
-                            <p><strong>CPF:</strong> ${user.cpf}</p>
-                            <p><strong>E-mail:</strong> ${user.email}</p>
-                            <p><strong>Telefone:</strong> ${user.tell}</p>
-                            <p><strong>Endereço:</strong> ${user.cep}, ${user.num_ende}</p>
-                        </div>
-                        
-                        <div class="atestados-mini-list">
-                            <h4>📄 Histórico de Atestados</h4>
-                            ${atestadosHtml}
-                        </div>
-                    `;
-                    resultadosDiv.appendChild(card);
-                });
-            })
-            .catch(err => {
-                loading.style.display = 'none';
-                console.error(err);
-                Swal.fire("Erro", "Erro ao buscar dados. Verifique a conexão.", "error");
-            });
-    }
-
-    // Como o campo de busca pode ser carregado depois, vamos usar delegação de eventos para o botão Enter
-    document.addEventListener('keypress', function (e) {
-        if (e.target && e.target.id === 'termoBusca') {
-            if (e.key === 'Enter') {
-                realizarBusca();
-            }
-        }
-    });
-</script>
-
-<script>
-    // Variável  para a URL da API (para o script de aprovação)
     const API_UPDATE_URL = '{{ url_for("api_update_atestado") }}';
->>>>>>> parent of e1ceeb9 (atualizacao geral)
 
-                        <article class="stat stat--info">
-                            <span class="stat__bar" aria-hidden="true"></span>
-                            <figure class="stat__icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                                    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                                </svg>
-                            </figure>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const overlay = document.getElementById('sidebar-overlay');
+        const dynamicContent = document.getElementById('dynamic-content');
+        const dashboardDefault = document.getElementById('dashboard-default-content');
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-                            <section class="stat__body">
-                                <p class="stat__label">Total de Atestados</p>
-                                <p class="stat__value">{{ kpis.total_atestados }}</p>
-                                <p class="stat__hint">Histórico completo</p>
-                            </section>
-                        </article>
-
-                        <article class="stat stat--warning">
-                            <span class="stat__bar" aria-hidden="true"></span>
-                            <figure class="stat__icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                            </figure>
-
-                            <section class="stat__body">
-                                <p class="stat__label">Atestados Pendentes</p>
-                                <p class="stat__value">{{ kpis.atestados_pendentes }}</p>
-                                <p class="stat__hint">Aguardando análise</p>
-                            </section>
-                        </article>
-
-                        <article class="stat stat--success">
-                            <span class="stat__bar" aria-hidden="true"></span>
-                            <figure class="stat__icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                    <polyline points="22 4 12 14.01 9 11.01" />
-                                </svg>
-                            </figure>
-
-                            <section class="stat__body">
-                                <p class="stat__label">Aprovados</p>
-                                <p class="stat__value">21</p>
-                                <p class="stat__hint">Validados pelo admin</p>
-                            </section>
-                        </article>
-
-                        <article class="stat stat--primary">
-                            <span class="stat__bar" aria-hidden="true"></span>
-                            <figure class="stat__icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" x2="12" y1="8" y2="12" />
-                                    <line x1="12" x2="12.01" y1="16" y2="16" />
-                                </svg>
-                            </figure>
-
-                            <section class="stat__body">
-                                <p class="stat__label">Rejeitados</p>
-                                <p class="stat__value">2</p>
-                                <p class="stat__hint">Com pendências</p>
-                            </section>
-
-                        </article>
-                    </section>
-
-                    <aside class="alert" role="alert">
-                        <span class="alert__bar" aria-hidden="true"></span>
-                        <figure class="alert__icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                                <line x1="12" x2="12" y1="9" y2="13" />
-                                <line x1="12" x2="12.01" y1="17" y2="17" />
-                            </svg>
-                        </figure>
-                        <p class="alert__text">
-                            <strong>ALERTA:</strong> Atestados enviados precisam de atenção. Clique em
-                            <strong>Gerenciar Atestados</strong> no menu lateral.
-                        </p>
-                    </aside>
-                </section>
-
-                <!-- <div class="content__spacer" aria-hidden="true"></div> -->
-            </main>
-
-            <footer class="footer">Seal Health © 2025 — Admin</footer>
-        </main>
-    </div>
-
-    <!-- ======================= LUX FAB ======================= -->
-    <button id="lux-fab" class="lux-fab" type="button" aria-label="Abrir assistente Lux" aria-haspopup="dialog"
-        aria-controls="lux-modal" onclick="openModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path
-                d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z" />
-            <path d="M5 3v4" />
-            <path d="M19 17v4" />
-            <path d="M3 5h4" />
-            <path d="M17 19h4" />
-        </svg>
-        <span class="lux-fab__text">Falar com Lux</span>
-    </button>
-
-    <!-- ======================= LUX MODAL ======================= -->
-    <div id="lux-modal" class="lux-modal" role="dialog" aria-modal="true" aria-labelledby="lux-title"
-        aria-hidden="true">
-
-        <section class="lux-modal__backdrop" data-close></section>
-
-        <section class="lux-modal__panel" role="document">
-
-            <header class="lux-header">
-                <figure class="lux-header__icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path
-                            d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z" />
-                    </svg>
-                </figure>
-
-                <section class="lux-header__text">
-                    <h2 id="lux-title">Lux</h2>
-                    <p>Assistente de IA · <span id="lux-ctx-indicator">contexto vazio</span></p>
-                </section>
-
-                <button id="lux-clear" class="icon-btn icon-btn--ghost-light" type="button"
-                    aria-label="Limpar contexto da conversa" title="Limpar contexto">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" aria-hidden="true">
-                        <path d="M3 6h18" />
-                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                    </svg>
-                </button>
-
-                <button class="icon-btn icon-btn--ghost-light" type="button" aria-label="Fechar" data-close>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M18 6 6 18" />
-                        <path d="m6 6 12 12" />
-                    </svg>
-                </button>
-            </header>
-
-            <section id="lux-messages" class="lux-messages" aria-live="polite">
-
-                <article class="lux-empty">
-                    <figure class="lux-empty__icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z" />
-                        </svg>
-                    </figure>
-
-                    <p class="lux-empty__title">Olá! Sou o Lux.</p>
-                    <p class="lux-empty__sub">Posso te ajudar a navegar e entender o painel.</p>
-
-                    <div class="lux-suggestions" id="lux-suggestions">
-                        <button type="button" class="lux-suggestion"
-                            data-suggest="Quantos atestados estão pendentes?">Quantos
-                            atestados estão pendentes?</button>
-                        <button type="button" class="lux-suggestion" data-suggest="Como aprovar um atestado?">Como
-                            aprovar um
-                            atestado?</button>
-                        <button type="button" class="lux-suggestion" data-suggest="Resumo do dia">Resumo do dia</button>
-                    </div>
-
-                </article>
-            </section>
-
-            <form id="lux-form" class="lux-form" autocomplete="off">
-
-                <label class="lux-input">
-
-                    <textarea id="lux-input" rows="1" placeholder="Pergunte algo à Lux…"
-                        aria-label="Sua mensagem"></textarea>
-                    <button type="submit" id="lux-send" class="lux-send" aria-label="Enviar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
-                            <path d="m21.854 2.147-10.94 10.939" />
-                        </svg>
-                    </button>
-
-                </label>
-
-                <footer class="lux-meta">
-
-                    <span class="lux-meta__chip" id="lux-meta-ctx" title="Mensagens lembradas pela Lux">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-                        <span><strong id="lux-ctx-count">0</strong> no contexto</span>
-                    </span>
-
-                    <span class="lux-meta__chip" id="lux-meta-time" hidden
-                        title="Tempo de raciocínio da última resposta">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        <span>pensou em <strong id="lux-last-time">0 ms</strong></span>
-                    </span>
-                    <span class="lux-meta__disc">Lux pode cometer erros.</span>
-
-                </footer>
-            </form>
-        </section>
-    </div>
-
-
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-
-    <script defer>
-
-        const API_UPDATE_URL = '{{ url_for("api_update_atestado") }}';
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const sidebar = document.getElementById('sidebar');
-            const menuToggle = document.getElementById('menuToggle');
-            const overlay = document.getElementById('sidebar-overlay');
-            const dynamicContent = document.getElementById('dynamic-content');
-            const dashboardDefault = document.getElementById('dashboard-default-content');
-
-            function toggleSidebar() {
-
-
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('active');
-
-
-
-            }
-
-
-            if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
-            if (overlay) overlay.addEventListener('click', toggleSidebar);
-
-            window.loadPage = function (url, isAtestados = false) {
-                dashboardDefault.style.display = 'none';
-                dynamicContent.innerHTML = '<p style="text-align:center">Carregando...</p>';
-                fetch(url).then(res => res.text()).then(html => {
-                    dynamicContent.innerHTML = html;
-                    if (isAtestados) initDataTables();
-                });
-            };
-
-
-            function initDataTables() {
-                if ($('#tabelaAtestados').length) {
-                    $('#tabelaAtestados').DataTable({ "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }, "order": [[0, "desc"]] });
-                }
-=======
         function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }
         if(menuToggle) menuToggle.addEventListener('click', toggleSidebar);
         if(overlay) overlay.addEventListener('click', toggleSidebar);
-=======
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
-        menuToggle.addEventListener('click', toggleSidebar);
-        overlay.addEventListener('click', toggleSidebar);
->>>>>>> parent of 1244241 (ajuste geral)
 
-        // funcao
-        function loadPage(url, isAtestados = false) {
+        window.loadPage = function(url, isAtestados = false) {
             dashboardDefault.style.display = 'none';
-            dynamicContent.innerHTML = '<p style="text-align:center">Carregando...</p>'; // Feedback visual
+            dynamicContent.innerHTML = '<p style="text-align:center">Carregando...</p>';
+            fetch(url).then(res => res.text()).then(html => {
+                dynamicContent.innerHTML = html;
+                if (isAtestados) initDataTables();
+            });
+        };
 
-            fetch(url)
-                .then(res => res.text())
-                .then(html => {
-                    dynamicContent.innerHTML = html;
-                    if (sidebar.classList.contains('open')) toggleSidebar();
-
-                    // SE FOR A PÁGINA DE ATESTADOS, INICIA O DATATABLES AGORA
-                    if (isAtestados) {
-                        initDataTables();
-                    }
-                })
-                .catch(err => {
-                    dynamicContent.innerHTML = "<p style='color:red; text-align:center;'>Erro ao carregar a página.</p>";
-                    console.error(err);
-                });
+        function initDataTables() {
+            if ($('#tabelaAtestados').length) {
+                $('#tabelaAtestados').DataTable({ "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }, "order": [[ 0, "desc" ]] });
+            }
         }
 
-        // --- INICIALIZA O DATATABLES ---
-        function initDataTables() {
-             // Verifica se a tabela existe antes de tentar transformar
-            if ($('#tabelaAtestados').length) {
-<<<<<<< HEAD
-                $('#tabelaAtestados').DataTable({ "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json" }, "order": [[ 0, "desc" ]] });
->>>>>>> parent of e1ceeb9 (atualizacao geral)
-=======
-                // Se já existir uma instância antiga, destrói para recriar
-                if ($.fn.DataTable.isDataTable('#tabelaAtestados')) {
-                    $('#tabelaAtestados').DataTable().destroy();
-                }
-
-                $('#tabelaAtestados').DataTable({
-                    responsive: true,
-                    "language": {
-                        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-                    },
-                    "order": [[ 3, "desc" ]] // Ordena pela coluna Data
-                });
->>>>>>> parent of 1244241 (ajuste geral)
-            }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-            document.getElementById('loadDashboard').onclick = () => { loadCa.style.display = 'block'; dynamicContent.innerHTML = ''; };
-            document.getElementById('loadAtestados').onclick = () => loadPage("{{ url_for('admin_gestao_atestados') }}", true);
-            document.getElementById('loadCadastro').onclick = () => loadPage("{{ url_for('admin_cadastro_usuarios') }}");
-            document.getElementById('loadBusca').onclick = () => loadPage("{{ url_for('admin_busca') }}");
-=======
         document.getElementById('loadDashboard').onclick = () => { dashboardDefault.style.display = 'block'; dynamicContent.innerHTML = ''; };
         document.getElementById('loadAtestados').onclick = () => loadPage("{{ url_for('admin_gestao_atestados') }}", true);
         document.getElementById('loadCadastro').onclick = () => loadPage("{{ url_for('admin_cadastro_usuarios') }}");
         document.getElementById('loadBusca').onclick = () => loadPage("{{ url_for('admin_busca') }}");
-=======
-        // Eventos de Clique
-        document.getElementById('loadDashboard').addEventListener('click', (e) => {
-             e.preventDefault();
-             dashboardDefault.style.display = 'block';
-             dynamicContent.innerHTML = '';
-             if (sidebar.classList.contains('open')) toggleSidebar();
-        });
-        
-        document.getElementById('loadAtestados').addEventListener('click', (e) => {
-            e.preventDefault();
-            // Passamos TRUE no segundo parametro para avisar que precisa do DataTables
-            loadPage("{{ url_for('admin_gestao_atestados') }}", true);
-        });
-        
-        document.getElementById('loadCadastro').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadPage("{{ url_for('admin_cadastro_usuarios') }}");
-        });
-        
-        document.getElementById('loadBusca').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadPage("{{ url_for('admin_busca') }}");
-        });
-        
-        document.getElementById('loadInfo').addEventListener('click', (e) => {
-            e.preventDefault();
-            dynamicContent.innerHTML = `
-                <div class="table-container" style="padding:20px; background:white; border-radius:8px;">
-                    <h2>Informações do Sistema</h2>
-                    <p><strong>Versão:</strong> 1.0 (TCC 2025)</p>
-                    <p><strong>Status:</strong> Operacional</p>
-                </div>`;
-             dashboardDefault.style.display = 'none';
-             if (sidebar.classList.contains('open')) toggleSidebar();
-        });
->>>>>>> parent of 1244241 (ajuste geral)
     });
 
-    // --- FUNÇÃO GLOBAL DE APROVAR/REJEITAR (Movi para cá para funcionar sempre) ---
-    function updateAtestado(id, status) {
-        let statusText = status === 1 ? 'Aprovar' : 'Rejeitar';
-        let confirmColor = status === 1 ? '#28a745' : '#dc3545';
+    // --- FUNÇÕES DE ANÁLISE ---
+    window.abrirModalAnalisar = function(urlArquivo, descricao, nomeUsuario, atestadoId, statusAtual) {
+        const modal = document.getElementById('previewModal');
+        const previewBody = document.getElementById('previewBody');
+        const previewFooter = document.getElementById('previewFooter');
+        
+        document.getElementById('previewDesc').innerText = descricao;
+        document.getElementById('previewUser').innerText = `Enviado por: ${nomeUsuario}`;
+        previewBody.innerHTML = '';
 
+        const extensao = urlArquivo.split('.').pop().toLowerCase();
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(extensao)) {
+            previewBody.innerHTML = `<img src="${urlArquivo}">`;
+        } else if (extensao === 'pdf') {
+            previewBody.innerHTML = `<iframe src="${urlArquivo}"></iframe>`;
+        } else {
+            previewBody.innerHTML = `<div style="padding:20px;">Preview indisponível. <a href="${urlArquivo}" target="_blank">Baixar</a></div>`;
+        }
+
+        if (parseInt(statusAtual) === 0) {
+            previewFooter.innerHTML = `
+                <button class="btn-modal btn-modal-reject" onclick="solicitarMotivoRejeicao(${atestadoId})"><i class="fas fa-times"></i> Rejeitar</button>
+                <button class="btn-modal btn-modal-approve" onclick="confirmarAprovacao(${atestadoId})"><i class="fas fa-check"></i> Aprovar</button>
+            `;
+        } else {
+            previewFooter.innerHTML = `<span style="color:#666;">Já avaliado.</span>`;
+        }
+        modal.classList.add('show');
+    };
+
+    window.fecharPreview = function() { document.getElementById('previewModal').classList.remove('show'); };
+
+    // AQUI ESTÁ A CHAVE: FECHAR O MODAL ANTES DE ABRIR O ALERTA
+    window.solicitarMotivoRejeicao = function(id) {
+        fecharPreview(); // Esconde o modal do atestado
         Swal.fire({
-<<<<<<< HEAD
             title: 'Motivo da Rejeição',
             input: 'textarea',
             inputPlaceholder: 'Por que este atestado foi recusado?',
@@ -751,96 +181,42 @@
             } else {
                 // Se cancelar, opcionalmente pode reabrir o modal, mas melhor deixar fechado para o fluxo ser limpo
             }
->>>>>>> parent of e1ceeb9 (atualizacao geral)
         });
+    };
 
-<<<<<<< HEAD
-        // --- FUNÇÕES DE ANÁLISE ---
-        window.abrirModalAnalisar = function (urlArquivo, descricao, nomeUsuario, atestadoId, statusAtual) {
-            const modal = document.getElementById('previewModal');
-            const previewBody = document.getElementById('previewBody');
-            const previewFooter = document.getElementById('previewFooter');
-
-            document.getElementById('previewDesc').innerText = descricao;
-            document.getElementById('previewUser').innerText = `Enviado por: ${nomeUsuario}`;
-            previewBody.innerHTML = '';
-
-            const extensao = urlArquivo.split('.').pop().toLowerCase();
-            if (['jpg', 'jpeg', 'png', 'gif'].includes(extensao)) {
-                previewBody.innerHTML = `<img src="${urlArquivo}">`;
-            } else if (extensao === 'pdf') {
-                previewBody.innerHTML = `<iframe src="${urlArquivo}"></iframe>`;
-=======
     window.confirmarAprovacao = function(id) {
         fecharPreview(); // Esconde o modal do atestado
         Swal.fire({
             title: 'Confirmar Aprovação?',
-=======
-            title: `Confirmar ${statusText}?`,
-            text: `Deseja realmente ${statusText.toLowerCase()} o atestado #${id}?`,
->>>>>>> parent of 1244241 (ajuste geral)
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: confirmColor,
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: `Sim, ${statusText}`,
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: 'Sim, aprovar',
+            confirmButtonColor: '#28a745'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(API_UPDATE_URL, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: id, status: status })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire('Sucesso!', `Atestado ${statusText.toLowerCase()} com sucesso.`, 'success');
-                        
-                        // Atualiza visualmente 
-                        let badge = document.getElementById(`status-${id}`);
-                        let actionsDiv = document.getElementById(`actions-${id}`);
-                        
-                        if(badge && actionsDiv) {
-                            badge.className = 'status-badge'; 
-                            if(status === 1) {
-                                badge.classList.add('status-1');
-                                badge.textContent = 'APROVADO';
-                            } else {
-                                badge.classList.add('status-2');
-                                badge.textContent = 'REJEITADO';
-                            }
-                            actionsDiv.innerHTML = '<span style="color: #aaa;">—</span>';
-                        }
-                    } else {
-                        Swal.fire('Erro!', data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    Swal.fire('Erro de Rede', 'Não foi possível conectar ao servidor.', 'error');
+                enviarDecisao(id, 1, '');
+            }
+        });
+    };
+
+    function enviarDecisao(id, status, motivo) {
+        fetch(API_UPDATE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, status: status, motivo: motivo })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire('Sucesso!', data.message, 'success').then(() => {
+                    // Recarrega a aba de atestados para atualizar a tabela
+                    document.getElementById('loadAtestados').click();
                 });
-<<<<<<< HEAD
->>>>>>> parent of e1ceeb9 (atualizacao geral)
             } else {
-                previewBody.innerHTML = `<div style="padding:20px;">Preview indisponível. <a href="${urlArquivo}" target="_blank">Baixar</a></div>`;
-=======
->>>>>>> parent of 1244241 (ajuste geral)
+                Swal.fire('Erro', data.message, 'error');
             }
-<<<<<<< HEAD
-
-            if (parseInt(statusAtual) === 0) {
-                previewFooter.innerHTML = `
-                <button class="btn-modal btn-modal-reject" onclick="solicitarMotivoRejeicao(${atestadoId})"><i class="fas fa-times"></i> Rejeitar</button>
-                <button class="btn-modal btn-modal-approve" onclick="confirmarAprovacao(${atestadoId})"><i class="fas fa-check"></i> Aprovar</button>`
-            }
-        }
-    </script>
-
-=======
         });
     }
 </script>
->>>>>>> parent of e1ceeb9 (atualizacao geral)
 </body>
-
 </html>
