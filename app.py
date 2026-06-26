@@ -4,7 +4,7 @@
 # pip install pymysql
 # pip install requests (Necessário para a Brevo/Resend)
 # pip install python-dotenv
-
+#
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import os
 import pymysql
