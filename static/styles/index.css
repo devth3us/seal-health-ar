@@ -1,9 +1,8 @@
-
 body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background-image: url('../images/fundo.jpeg'); 
+  background-image: url('../images/fundo.jpeg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -15,19 +14,22 @@ body {
 
 
 .swal2-shown {
-    height: 100vh !important;
-    overflow: hidden !important;
+  height: 100vh !important;
+  overflow: hidden !important;
 }
 
 
 /* Caixa de login centralizada */
 .login-container {
   background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
   width: 350px;
   text-align: center;
+  position: absolute;
+  top: 40vh;
+
 }
 
 /* Titulo */
@@ -41,41 +43,54 @@ body {
 
 /* Contêiner Pai */
 .input-group {
-  position: relative; /* Essencial para posicionar o label de forma absoluta */
-  margin: 25px 0 35px 0; /* Espaçamento entre os campos e botão */
-  text-align: left; /* Garante que o texto dentro seja alinhado à esquerda */
+  position: relative;
+  /* Essencial para posicionar o label de forma absoluta */
+  margin: 25px 0 35px 0;
+  /* Espaçamento entre os campos e botão */
+  text-align: left;
+  /* Garante que o texto dentro seja alinhado à esquerda */
 }
 
 .input-group input {
   width: 100%;
   padding: 12px;
-  margin: 0; /* Remove margem */
+  margin: 0;
+  /* Remove margem */
   border: 1px solid #ccc;
   border-radius: 6px;
   box-sizing: border-box;
   font-size: 16px;
-  background: transparent; /* Permite que o label seja visto sob o input */
+  background: transparent;
+  /* Permite que o label seja visto sob o input */
 }
 
 /*Label */
 .input-group label {
   position: absolute;
-  top: 12px; /* Posiçao vertical inicial */
-  left: 12px; /* Posiçao horizontal inicial */
+  top: 12px;
+  /* Posiçao vertical inicial */
+  left: 12px;
+  /* Posiçao horizontal inicial */
   color: #888;
   font-size: 16px;
-  pointer-events: none; /* Permite clicar no input "atraves" do label */
-  transition: all 0.3s ease; /* A TRANSICAO SUAVE */
+  pointer-events: none;
+  /* Permite clicar no input "atraves" do label */
+  transition: all 0.3s ease;
+  /* A TRANSICAO SUAVE */
   padding: 0 4px;
 }
 
-.input-group input:focus + label,
-.input-group input:valid + label { 
-  top: -10px; /* MOVE PARA CIMA */
+.input-group input:focus+label,
+.input-group input:valid+label {
+  top: -10px;
+  /* MOVE PARA CIMA */
   left: 8px;
-  font-size: 12px; /* DIMINUI A FONTE */
-  color: #007b8f; /* MUDA A COR */
-  background-color: white; /* Cor de fundo para "cortar" a linha da borda */
+  font-size: 12px;
+  /* DIMINUI A FONTE */
+  color: #007b8f;
+  /* MUDA A COR */
+  background-color: white;
+  /* Cor de fundo para "cortar" a linha da borda */
 }
 
 
@@ -93,7 +108,8 @@ body {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  margin-bottom: 15px; /* Adiciona margem abaixo do botão */
+  margin-bottom: 15px;
+  /* Adiciona margem abaixo do botão */
 }
 
 .login-container button:hover {
@@ -111,10 +127,141 @@ body {
   font-weight: bold;
 }
 
-.esqueci_senha{
+.esqueci_senha {
   padding: 5px;
-  margin: 0; /* Ajustado a margem */
+  margin: 0;
+  /* Ajustado a margem */
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+
+
+.lux-inicio {
+  position: relative;
+  top: -25vh;
+  background-color: #ffffff;
+  border-radius: 50%;
+
+  z-index: 9999;
+}
+
+
+header {
+  position: absolute;
+  top: 0px;
+  width: 98.3%;
+  background: #007b8f;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  padding: 15px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+footer {
+  position: absolute;
+  bottom: 0px;
+  width: 98.9%;
+  background: #007b8f;
+  color: #ffffff;
+  text-align: center;
+  padding: 10px;
+  margin-top: auto;
+}
+
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  #main-content {
+    margin-left: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  header {
+    padding: 10px 15px;
+  }
+
+  header h1 {
+    font-size: 20px;
+  }
+
+  .atestado-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+  }
+
+  .atestado-item .status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+
+  .atestado-item p {
+    margin-top: 25px;
+    font-size: 15px;
+  }
+
+  .modal-content {
+    width: 92%;
+    padding: 24px 18px;
+    margin-top: 20px;
+  }
+
+  .upload-area {
+    padding: 15px 10px;
+  }
+
+  .font-size-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  #cameraButton {
+    bottom: 60px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+
+  .kpi-card {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .lux-chat-box {
+    width: calc(100% - 32px);
+    right: 16px;
+    left: 16px;
+    bottom: 95px;
+    height: 430px;
+  }
 }
