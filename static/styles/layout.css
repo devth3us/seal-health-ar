@@ -694,12 +694,51 @@ footer {
     to { transform: translateY(0); opacity: 1; }
 }
 
+/* ==========================================================================
+   CORREÇÃO DE ALINHAMENTO VERTICAL (COMPUTADOR / DESKTOP)
+   Ativa o Grid a partir de 769px para travar as colunas milimetricamente
+   ========================================================================== */
+@media screen and (min-width: 769px) {
+    .atestado-item {
+        display: grid !important;
+        grid-template-columns: 110px 1fr 130px 180px; 
+        align-items: center;
+        gap: 20px;
+        padding: 15px 25px;
+    }
+
+    .atestado-item a {
+        justify-self: center;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .atestado-item h3,
+    .atestado-item p,
+    .atestado-item strong {
+        margin: 0;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .atestado-item span:last-child {
+        justify-self: end;
+        text-align: right;
+        white-space: nowrap;
+    }
+}
+
 @media screen and (min-width: 992px) {
     #main-content {
         margin-left: 0;
     }
 }
 
+/* ==========================================================================
+   RESPONSIVIDADE CELULAR (SUAS REGRAS ORIGINAIS ADAPTADAS)
+   ========================================================================== */
 @media screen and (max-width: 768px) {
     header {
         padding: 10px 15px;
@@ -708,6 +747,7 @@ footer {
         font-size: 20px;
     }
     .atestado-item {
+        display: flex !important; /* Força o retorno ao formato Flex no celular */
         flex-direction: column;
         align-items: flex-start; 
         gap: 10px;
